@@ -1,7 +1,7 @@
 Package: PKBD
 Type: Package
-Title: Tools for simulating Poisson kernel-based distributions. 
-Version: 0.3
+Title: Tools for simulating Poisson kernel-based distributions
+Version: 0.0.1
 Authors@R: c(
     person("Lukas", "Sablica", email = "lsablica@wu.ac.at", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-9166-4563")), 
@@ -16,6 +16,6 @@ Description: The random sampling scheme of the package offers two random number 
 License: GPL-3
 Encoding: UTF-8
 Imports: Rcpp (>= 0.12.18), Tinflex (>= 1.8)
-LinkingTo: Rcpp, RcppArmadillo, Tinflex
+LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 7.2.3
 Depends: R (>= 3.1.0)

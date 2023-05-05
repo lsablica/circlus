@@ -3,75 +3,20 @@
 #include "Rcpp.h"
 using namespace Rcpp;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-  
-#include "rdist.h"
-  
-#ifdef __cplusplus
-}
-#endif
 
-
-NumericVector Tinflexsampler_sampler_from_c(int n,
-                                            double lambda,
-                                            double d,
-                                            double cT,
-                                            double rho) {
-  NumericVector sexp_params = {lambda,d};
-  NumericVector sexp_c = {cT};
-  NumericVector sexp_rho = {rho};
-  IntegerVector sexp_n = {n};
-  NumericVector sexp_ib = {0,1};
-  NumericVector sexp_max_intervals = {1001};
-  SEXP ab = Tinflexsampler_sampler2(sexp_n, sexp_params, sexp_ib, sexp_c,
-                                   sexp_rho, sexp_max_intervals);
-  Rcpp::NumericVector result( ab );
-  return result;
-}
-
-//' @title Random Sampling from PKBD Distributions
-//' @description \code{rmwat} generates a random sample from PKBD distributions.
+//' @title Random Sampling from PKBD Distributions using ACG Envelopes
+//' @description \code{rPKBD_ACG} generates a random sample from PKBD distributions.
+//' @param n number of random draws.
 //' @param lambda a numeric giving the concentration parameter.
-//' @param mu a numeric vector giving the mu parameter.
-//' @return  A vector the generated values.
-//' @details The function generates samples from PKBD using Tinflex package
-//' @rdname rpkbd_Tinflex
-//' @export
-// [[Rcpp::export]]
-arma::mat rpkbd_Tinflex(int n, double lambda, arma::vec &mu, double cT, double rho){
-  double norm = as_scalar(sum(pow(mu,2)));
-  int p = mu.n_elem;
-  arma::mat A(n, p, arma::fill::randn);
-  if(lambda == 0 || norm == 0){/*uniform*/
-    return normalise(A,2,1);
-  }
-  mu = mu/sqrt(norm);
-  NumericVector v = Tinflexsampler_sampler_from_c(n, lambda, p, cT, rho);
-  arma::vec w = as<arma::vec>(wrap(v));
-  arma::vec choice = {-1, 1};
-  arma::vec index = RcppArmadillo::sample(choice, n, true); 
-  w = w % index;
-  A = A - A*mu*mu.t() ;
-  A = arma::normalise(A, 2, 1);
-  A = A.each_col() % sqrt(1 - w%w);
-  A = w*mu.t() + A;
-  return A;
-} 
-
-
-
-//' @title Random Sampling from PKBD Distributions
-//' @description \code{rmwat} generates a random sample from PKBD distributions.
-//' @param lambda a numeric giving the concentration parameter.
-//' @param mu a numeric vector giving the mu parameter.
+//' @param mu a numeric vector giving the mean direction parameter.
 //' @return  A vector the generated values.
 //' @details The function generates samples from PKBD using ACG envelopes
-//' @rdname rpkbd_ACG
+//' @rdname rPKBD_ACG
+//' @useDynLib PKBD
+//' @importFrom Rcpp evalCpp
 //' @export
 // [[Rcpp::export]]
-arma::mat rpkbd_ACG(int n, double lambda, arma::vec &mu){
+arma::mat rPKBD_ACG(int n, double lambda, arma::vec &mu){
   double norm = as_scalar(sum(pow(mu,2)));
   int p = mu.n_elem;
   arma::mat A(n, p);
