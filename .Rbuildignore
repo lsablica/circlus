@@ -3,7 +3,7 @@
 \.dll$
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^Work$
+^Test$
 ^data-raw$
 ^sticker\.png$
 ^cran-comments\.md$
