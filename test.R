@@ -101,5 +101,5 @@ loglikCurrent <- -Inf
   currentIter <- currentIter + 1
 }
 
-
-
+mu_current ; rho_current
+M_step(dat, beta_matrix, mu_matrix, rho_vector, k =3, n = 50, d = 5, tol = 1e-6, maxiter = 100)
