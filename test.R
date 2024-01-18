@@ -103,3 +103,27 @@ loglikCurrent <- -Inf
 
 mu_current ; rho_current
 M_step(dat, beta_matrix, mu_matrix, rho_vector, k =3, n = 50, d = 5, tol = 1e-6, maxiter = 100)
+
+
+library(Rcpp)
+library(microbenchmark)
+sourceCpp("src/sCauchy.cpp")
+
+
+
+gsl::hyperg_2F1(2, 5, 9, 0.7 )
+5*hyper2F1( 6, 9, 0.7 )-4*hyper2F1( 5, 9, 0.7 )
+5*hyper2F1( 6, 9, 0.7 )+(8/0.7)*(1-hyper2F1( 4, 8, 0.7 ))
+
+
+n1d(8, 0.7)
+n1d2(8, 0.7)
+
+n1d_deriv(8, 0.7)
+n1d_deriv2(8, 0.7)
+
+
+hybridnewton(8,0.8)
+n1d(8, 0.539277)
+
+n1d(8, hybridnewton(8,0.99))
