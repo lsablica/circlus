@@ -127,3 +127,46 @@ hybridnewton(8,0.8)
 n1d(8, 0.539277)
 
 n1d(8, hybridnewton(8,0.99))
+
+X = movMF::rmovMF(4, 0.7*c(1,0,0))
+
+rho = 0.5
+mu = c(1,1,1)/sqrt(sum(c(1,1,1)^2))
+psi = rho * mu
+V = (1-rho^2)*(X + matrix(psi, byrow = TRUE, ncol = 3, nrow = 4))/matrix(1+rho^2+2*rho*X%*%mu, nrow = 4, ncol = 3) + matrix(psi, byrow = TRUE, ncol = 3, nrow = 4)
+
+Moebius_S(X, mu , rho)
+
+k=2
+n=4
+d=3
+
+beta_matrix = matrix(abs(rnorm(n*k)), nrow = n, ncol = k)
+beta_matrix = beta_matrix/sqrt(rowSums(beta_matrix^2))
+
+weights_matrix = beta_matrix/matrix(colSums(beta_matrix), nrow = n, ncol = k, byrow = TRUE)
+weighted_means = t(X)%*%weights_matrix
+
+for(i in 1:k){
+  means = weighted_means[,i]
+  weightss = weights_matrix[,i]
+  mu0 = means/sqrt(sum(means^2))
+  rho0 = hybridnewton(d, sqrt(sum(means^2)));
+  psi = rho0 * mu0
+  psiold = psi +10
+  print(psi)
+  
+  while(norm(psi-psiold, type = "2") > 1e-6){
+    psiold = psi
+    trans_data_weighted = t(Moebius_S(X, -mu0 , rho0)) %*% weightss
+    psi = psiold + ((d+1)*(1-rho0^2)/(2*d))*trans_data_weighted
+    print(psi)
+    rho0 = sqrt(sum(psi^2))
+    mu0 = psi/rho0
+  }
+  print(mu0)
+  print(rho0)
+}
+
+M_step_sCauchy(X, beta_matrix, k =2, n = 4, d = 3, tol = 1e-6, maxiter = 100)
+

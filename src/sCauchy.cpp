@@ -64,8 +64,68 @@ double hybridnewton(double d, double target, double tol = 1e-6, int maxiter = 10
   return x;
 }
 
+// [[Rcpp::export]]
+arma::mat Moebius_S(arma::mat X, arma::vec mu, double rho){
+  
+  arma::mat Y = (1-rho*rho)*(X.each_row() + rho*mu.t());
+  Y = Y.each_col()/(1+2*rho*X*mu+rho*rho);
+  Y = Y.each_row() + rho*mu.t();
+  
+  return Y;
+}
+
+// [[Rcpp::export]]
+arma::mat rsCauchy(int n, double rho, arma::vec &mu){
+  double norm = as_scalar(sum(pow(mu,2)));
+  int p = mu.n_elem;
+  arma::mat A(n, p);
+  A = normalise(A.randn(),2,1);
+  if(rho == 0 || norm == 0){/*uniform*/
+    return A;
+  }
+  return Moebius_S(A, mu, rho);
+} 
 
 
+// [[Rcpp::export]]
+void M_step_sCauchy(const arma::mat &data, const arma::mat &beta_matrix,
+            int k, int n, int d, double tol = 1e-6, int maxiter = 100){ 
+  arma::rowvec sums = sum(beta_matrix);
+  arma::rowvec alpha = sums/n;
+  arma::mat weights =  beta_matrix.each_row()/sums;
+  arma::mat weighted_means = data.t() * weights;
+  
+  // we iterate over all clusters k, calculate method of moments estimate and use it for MLE estimate
+  int niter;
+  double norm, rho0;
+  arma::vec mu0, psi, psiold, w, results_rho(k);
+  arma::mat weighted_trans_data(n, d), results_mu(d, k);
+  for(int i = 0; i < k; i++){
+    niter = 0;
+    mu0 = weighted_means.col(i);
+    w = weights.col(i);
+    psiold = 2*mu0;
+    norm = arma::norm(mu0, 2);
+    mu0 = mu0/norm;
+    rho0 = hybridnewton(d, norm, tol = tol, maxiter = maxiter);
+    psi = rho0*mu0;
+    Rcout << "psi0 : " << psi << "\n";
+    
+    while(arma::norm(psi-psiold, 2) > tol && niter < maxiter){
+      psiold = psi;
+      weighted_trans_data = Moebius_S(data, - mu0, rho0).t() * w;
+      psi = psiold + ((d+1)*(1-rho0*rho0)/(2*d))*weighted_trans_data; 
+      Rcout << "psi : " << psi << "\n";
+      rho0 = arma::norm(psi, 2);
+      mu0 = psi/rho0;
+      niter += 1;
+    }
+    results_mu.col(i) = mu0;
+    results_rho(i) = rho0;
+  }
+  Rcout << "rho_vector : " << results_rho << "\n";
+  Rcout << "results_mu : " << results_mu << "\n";
+} 
 
 //old code
 /*
