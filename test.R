@@ -105,7 +105,7 @@ mu_current ; rho_current
 M_step(dat, beta_matrix, mu_matrix, rho_vector, k =3, n = 50, d = 5, tol = 1e-6, maxiter = 100)
 
 
-library(Rcpp)
+library(Rcpp) 
 library(microbenchmark)
 sourceCpp("src/sCauchy.cpp")
 
@@ -130,6 +130,7 @@ n1d(8, hybridnewton(8,0.99))
 
 X = movMF::rmovMF(4, 0.7*c(1,0,0))
 
+
 rho = 0.5
 mu = c(1,1,1)/sqrt(sum(c(1,1,1)^2))
 psi = rho * mu
@@ -142,7 +143,7 @@ n=4
 d=3
 
 beta_matrix = matrix(abs(rnorm(n*k)), nrow = n, ncol = k)
-beta_matrix = beta_matrix/sqrt(rowSums(beta_matrix^2))
+beta_matrix = beta_matrix/matrix(rowSums(beta_matrix), nrow = n, ncol = k)
 
 weights_matrix = beta_matrix/matrix(colSums(beta_matrix), nrow = n, ncol = k, byrow = TRUE)
 weighted_means = t(X)%*%weights_matrix
@@ -167,6 +168,17 @@ for(i in 1:k){
   print(mu0)
   print(rho0)
 }
+
+
+k=2
+n=100
+d=3
+vv = c(rep(c(0.99,0.99,0.98,0.98,0.97),10), rep(c(0.01,0.01,0.03,0.02,0.01),10))
+
+X = rbind(rsCauchy(50, 0.7, c(1,0,0)), rsCauchy(50, 0.2, c(0,1,0)))
+beta_matrix = matrix(c(vv, 1-vv), nrow = n, ncol = k)
+beta_matrix = beta_matrix/matrix(rowSums(beta_matrix), nrow = n, ncol = k)
+
 
 M_step_sCauchy(X, beta_matrix, k =2, n = 4, d = 3, tol = 1e-6, maxiter = 100)
 

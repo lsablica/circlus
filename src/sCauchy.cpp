@@ -109,13 +109,13 @@ void M_step_sCauchy(const arma::mat &data, const arma::mat &beta_matrix,
     mu0 = mu0/norm;
     rho0 = hybridnewton(d, norm, tol = tol, maxiter = maxiter);
     psi = rho0*mu0;
-    Rcout << "psi0 : " << psi << "\n";
+    //Rcout << "psi0 : " << psi << "\n";
     
     while(arma::norm(psi-psiold, 2) > tol && niter < maxiter){
       psiold = psi;
       weighted_trans_data = Moebius_S(data, - mu0, rho0).t() * w;
       psi = psiold + ((d+1)*(1-rho0*rho0)/(2*d))*weighted_trans_data; 
-      Rcout << "psi : " << psi << "\n";
+      //Rcout << "psi : " << psi << "\n";
       rho0 = arma::norm(psi, 2);
       mu0 = psi/rho0;
       niter += 1;
