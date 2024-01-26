@@ -103,6 +103,7 @@ loglikCurrent <- -Inf
 
 mu_current ; rho_current
 M_step(dat, beta_matrix, mu_matrix, rho_vector, k =3, n = 50, d = 5, tol = 1e-6, maxiter = 100)
+M_step_PKBD(dat, beta_matrix[,1], mu_matrix[,1], rho_vector[1], n = 50, d = 5, tol = 1e-6, maxiter = 100)
 
 
 library(Rcpp) 
@@ -161,7 +162,6 @@ for(i in 1:k){
     psiold = psi
     trans_data_weighted = t(Moebius_S(X, -mu0 , rho0)) %*% weightss
     psi = psiold + ((d+1)*(1-rho0^2)/(2*d))*trans_data_weighted
-    print(psi)
     rho0 = sqrt(sum(psi^2))
     mu0 = psi/rho0
   }
@@ -180,5 +180,6 @@ beta_matrix = matrix(c(vv, 1-vv), nrow = n, ncol = k)
 beta_matrix = beta_matrix/matrix(rowSums(beta_matrix), nrow = n, ncol = k)
 
 
-M_step_sCauchy(X, beta_matrix, k =2, n = 4, d = 3, tol = 1e-6, maxiter = 100)
+M_step_sCauchy2(X, beta_matrix, k =2, n = 4, d = 3, tol = 1e-6, maxiter = 100)
+M_step_sCauchy(X, beta_matrix[,1], n = 4, d = 3, tol = 1e-6, maxiter = 100)
 

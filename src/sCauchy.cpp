@@ -88,7 +88,38 @@ arma::mat rsCauchy(int n, double rho, arma::vec &mu){
 
 
 // [[Rcpp::export]]
-void M_step_sCauchy(const arma::mat &data, const arma::mat &beta_matrix,
+void M_step_sCauchy(const arma::mat &data, arma::vec weights,
+                    int n, int d, double tol = 1e-6, int maxiter = 100){ 
+
+  weights =  arma::normalise(weights, 1);
+  arma::vec weighted_means = data.t() * weights;
+  int niter = 0;
+  double norm, rho0, results_rho;
+  arma::vec mu0, psi, psiold, results_mu;
+  arma::mat weighted_trans_data(n, d);
+  psiold = 2*weighted_means;
+  norm = arma::norm(weighted_means);
+  
+  mu0 = weighted_means/norm;
+  rho0 = hybridnewton(d, norm, tol = tol, maxiter = maxiter);
+  psi = rho0*mu0;
+  
+  while(arma::norm(psi-psiold, 2) > tol && niter < maxiter){
+    psiold = psi;
+    weighted_trans_data = Moebius_S(data, - mu0, rho0).t() * weights;
+    psi = psiold + ((d+1)*(1-rho0*rho0)/(2*d))*weighted_trans_data; 
+    rho0 = arma::norm(psi, 2);
+    mu0 = psi/rho0;
+    niter += 1;
+  } 
+  results_mu = mu0;
+  results_rho = rho0;
+  Rcout << "rho_vector : " << results_rho << "\n";
+  Rcout << "results_mu : " << results_mu << "\n";
+}  
+
+// [[Rcpp::export]]
+void M_step_sCauchy2(const arma::mat &data, const arma::mat &beta_matrix,
             int k, int n, int d, double tol = 1e-6, int maxiter = 100){ 
   arma::rowvec sums = sum(beta_matrix);
   arma::rowvec alpha = sums/n;
@@ -109,13 +140,13 @@ void M_step_sCauchy(const arma::mat &data, const arma::mat &beta_matrix,
     mu0 = mu0/norm;
     rho0 = hybridnewton(d, norm, tol = tol, maxiter = maxiter);
     psi = rho0*mu0;
-    //Rcout << "psi0 : " << psi << "\n";
+    Rcout << "psi0 : " << psi << "\n";
     
     while(arma::norm(psi-psiold, 2) > tol && niter < maxiter){
       psiold = psi;
       weighted_trans_data = Moebius_S(data, - mu0, rho0).t() * w;
       psi = psiold + ((d+1)*(1-rho0*rho0)/(2*d))*weighted_trans_data; 
-      //Rcout << "psi : " << psi << "\n";
+      Rcout << "psi : " << psi << "\n";
       rho0 = arma::norm(psi, 2);
       mu0 = psi/rho0;
       niter += 1;

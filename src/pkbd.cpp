@@ -3,7 +3,7 @@ using namespace Rcpp;
 using namespace std;
 
 // [[Rcpp::export]]
-double hybridnewton(double c1, double c2, double c3, double tol = 1e-6, int maxiter = 100) {
+double hybridnewton(double c1, double c2, double c3, double tol, int maxiter) {
   double x,a,b;
   a = 0;
   b = 1;
@@ -32,8 +32,27 @@ double hybridnewton(double c1, double c2, double c3, double tol = 1e-6, int maxi
 }
 
 // [[Rcpp::export]]
+void M_step_PKBD(const arma::mat &data, arma::vec weights, arma::vec mu_vec, double rho,
+                 int n, int d, double tol = 1e-6, int maxiter = 100){ 
+  double alpha = arma::mean(weights);
+  
+  arma::vec crossmat = data*mu_vec;
+  arma::vec wscale =  1 + pow(rho, 2) - 2*rho*crossmat;
+  arma::vec scaled_weight = weights/wscale;
+  arma::vec mu = data.t() * scaled_weight; 
+  double mu_norm = arma::vecnorm(mu);
+  mu_vec = mu/mu_norm;
+  double sums_scaled_weight = sum(scaled_weight);
+  
+  rho = hybridnewton(d*sums_scaled_weight, 2*n*alpha, d*mu_norm, tol, maxiter); 
+  //Rcout << "rho: " << rho << "\n";
+} 
+
+
+
+// [[Rcpp::export]]
 void M_step(const arma::mat &data, const arma::mat &beta_matrix, 
-            arma::mat &mu_matrix, arma::vec &rho_vector,
+            arma::mat mu_matrix, arma::vec rho_vector,
             int k, int n, int d, double tol, int maxiter){ 
   arma::rowvec alpha = sum(beta_matrix)/n;
   
