@@ -183,3 +183,50 @@ beta_matrix = beta_matrix/matrix(rowSums(beta_matrix), nrow = n, ncol = k)
 M_step_sCauchy2(X, beta_matrix, k =2, n = 4, d = 3, tol = 1e-6, maxiter = 100)
 M_step_sCauchy(X, beta_matrix[,1], n = 4, d = 3, tol = 1e-6, maxiter = 100)
 
+
+library(flexmix)
+mymclust <- function ( formula = .~. , diagonal = TRUE ){
+  retval <- new ("FLXMC" , weighted = TRUE ,
+                 formula = formula , dist = " mvnorm " ,
+                 name = " my model - based clustering ")
+  retval@defineComponent <- function ( para ) {
+     logLik <- function (x , y ) {
+       #print("new iteration")
+       #print(para$center)
+       #print(para$cov)
+       #print(mvtnorm::dmvnorm(y , mean = para$center ,sigma = para$cov , log = TRUE ))
+       mvtnorm::dmvnorm(y , mean = para$center ,
+                        sigma = para$cov , log = TRUE )
+     }
+     predict <- function ( x ) {
+       print(x)
+       matrix ( para$center , nrow = nrow ( x ) ,
+               ncol = length ( para$center ) , byrow = TRUE )
+     }
+     new ("FLXcomponent" , parameters =
+         list ( center = para$center , cov = para$cov ) ,
+         df = para$df , logLik = logLik , predict = predict )
+  }
+  retval@fit <- function (x , y , w , ...) {
+    print(w)
+    para <- cov.wt (y , wt = w )[ c ("center" , "cov")]
+    df <- (3 * ncol ( y ) + ncol ( y )^2)/2
+    if (diagonal) {
+      para$cov <- diag ( diag ( para$cov ))
+      df <- 2 * ncol ( y )
+    }
+    retval@defineComponent ( c ( para , df = df ))
+  }
+  retval
+}
+
+mix <- rbind(mvtnorm::rmvnorm(10, mean = c(1,1), sigma = diag(c(1,1))), mvtnorm::rmvnorm(10, mean = c(10,10), sigma = diag(c(1,1))))
+
+m1 <- flexmix(mix ~ 1, k = 2, model = mymclust())
+
+
+mvtnorm::dmvnorm(mix , mean = c(6.667134, 7.083449),
+                 sigma = matrix(c(17.2475,0,0,21.54636),2,2) , log = TRUE )
+
+
+predict(m1, as.data.frame(mvtnorm::rmvnorm(10, mean = c(1,1))))
