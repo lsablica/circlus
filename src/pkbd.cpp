@@ -49,7 +49,15 @@ void M_step_PKBD(const arma::mat &data, arma::vec weights, arma::vec mu_vec, dou
 } 
 
 
+// [[Rcpp::export]]
+arma::vec logLik_PKBD(const arma::mat &data, arma::vec mu_vec, double rho){ 
+  
+  double d = data.n_rows;
+  return log(1-rho) - d*arma::log(1 + rho*rho -2*rho*data*mu_vec)/2; 
+} 
 
+
+/*
 // [[Rcpp::export]]
 void M_step(const arma::mat &data, const arma::mat &beta_matrix, 
             arma::mat mu_matrix, arma::vec rho_vector,
@@ -77,4 +85,5 @@ void M_step(const arma::mat &data, const arma::mat &beta_matrix,
   }
   Rcout << "rho_vector : " << rho_vector << "\n";
 }
+*/
 

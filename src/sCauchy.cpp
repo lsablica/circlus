@@ -90,7 +90,8 @@ arma::mat rsCauchy(int n, double rho, arma::vec &mu){
 // [[Rcpp::export]]
 void M_step_sCauchy(const arma::mat &data, arma::vec weights,
                     int n, int d, double tol = 1e-6, int maxiter = 100){ 
-
+  
+  d = d - 1;
   weights =  arma::normalise(weights, 1);
   arma::vec weighted_means = data.t() * weights;
   int niter = 0;
@@ -119,47 +120,58 @@ void M_step_sCauchy(const arma::mat &data, arma::vec weights,
 }  
 
 // [[Rcpp::export]]
-void M_step_sCauchy2(const arma::mat &data, const arma::mat &beta_matrix,
-            int k, int n, int d, double tol = 1e-6, int maxiter = 100){ 
-  arma::rowvec sums = sum(beta_matrix);
-  arma::rowvec alpha = sums/n;
-  arma::mat weights =  beta_matrix.each_row()/sums;
-  arma::mat weighted_means = data.t() * weights;
+arma::vec logLik_PKBD(const arma::mat &data, arma::vec mu_vec, double rho){ 
   
-  // we iterate over all clusters k, calculate method of moments estimate and use it for MLE estimate
-  int niter;
-  double norm, rho0;
-  arma::vec mu0, psi, psiold, w, results_rho(k);
-  arma::mat weighted_trans_data(n, d), results_mu(d, k);
-  for(int i = 0; i < k; i++){
-    niter = 0;
-    mu0 = weighted_means.col(i);
-    w = weights.col(i);
-    psiold = 2*mu0;
-    norm = arma::norm(mu0, 2);
-    mu0 = mu0/norm;
-    rho0 = hybridnewton(d, norm, tol = tol, maxiter = maxiter);
-    psi = rho0*mu0;
-    Rcout << "psi0 : " << psi << "\n";
-    
-    while(arma::norm(psi-psiold, 2) > tol && niter < maxiter){
-      psiold = psi;
-      weighted_trans_data = Moebius_S(data, - mu0, rho0).t() * w;
-      psi = psiold + ((d+1)*(1-rho0*rho0)/(2*d))*weighted_trans_data; 
-      Rcout << "psi : " << psi << "\n";
-      rho0 = arma::norm(psi, 2);
-      mu0 = psi/rho0;
-      niter += 1;
-    }
-    results_mu.col(i) = mu0;
-    results_rho(i) = rho0;
-  }
-  Rcout << "rho_vector : " << results_rho << "\n";
-  Rcout << "results_mu : " << results_mu << "\n";
+  double d = data.n_rows;
+  return (d-1)*log(1-rho) - (d-1)*arma::log(1 + rho*rho -2*rho*data*mu_vec); 
 } 
+
 
 //old code
 /*
+ 
+ 
+ // [[Rcpp::export]]
+ void M_step_sCauchy2(const arma::mat &data, const arma::mat &beta_matrix,
+ int k, int n, int d, double tol = 1e-6, int maxiter = 100){ 
+ arma::rowvec sums = sum(beta_matrix);
+ arma::rowvec alpha = sums/n;
+ arma::mat weights =  beta_matrix.each_row()/sums;
+ arma::mat weighted_means = data.t() * weights;
+ 
+ // we iterate over all clusters k, calculate method of moments estimate and use it for MLE estimate
+ int niter;
+ double norm, rho0;
+ arma::vec mu0, psi, psiold, w, results_rho(k);
+ arma::mat weighted_trans_data(n, d), results_mu(d, k);
+ for(int i = 0; i < k; i++){
+ niter = 0;
+ mu0 = weighted_means.col(i);
+ w = weights.col(i);
+ psiold = 2*mu0;
+ norm = arma::norm(mu0, 2);
+ mu0 = mu0/norm;
+ rho0 = hybridnewton(d, norm, tol = tol, maxiter = maxiter);
+ psi = rho0*mu0;
+ Rcout << "psi0 : " << psi << "\n";
+ 
+ while(arma::norm(psi-psiold, 2) > tol && niter < maxiter){
+ psiold = psi;
+ weighted_trans_data = Moebius_S(data, - mu0, rho0).t() * w;
+ psi = psiold + ((d+1)*(1-rho0*rho0)/(2*d))*weighted_trans_data; 
+ Rcout << "psi : " << psi << "\n";
+ rho0 = arma::norm(psi, 2);
+ mu0 = psi/rho0;
+ niter += 1;
+ }
+ results_mu.col(i) = mu0;
+ results_rho(i) = rho0;
+ }
+ Rcout << "rho_vector : " << results_rho << "\n";
+ Rcout << "results_mu : " << results_mu << "\n";
+ } 
+ 
+ 
  
  double n1d(const double d, const double x){
  return 1 + (1-x)*(1-x)*(1-hyper2F1(d/2, d, 4*x/((1+x)*(1+x))))/(2*x);
