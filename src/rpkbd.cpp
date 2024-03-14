@@ -7,7 +7,7 @@ using namespace Rcpp;
 //' @title Random Sampling from PKBD Distributions using ACG Envelopes
 //' @description \code{rPKBD_ACG} generates a random sample from PKBD distributions.
 //' @param n number of random draws.
-//' @param lambda a numeric giving the concentration parameter.
+//' @param rho a numeric giving the concentration parameter.
 //' @param mu a numeric vector giving the mean direction parameter.
 //' @return  A vector the generated values.
 //' @details The function generates samples from PKBD using ACG envelopes
@@ -16,7 +16,8 @@ using namespace Rcpp;
 //' @importFrom Rcpp evalCpp
 //' @export
 // [[Rcpp::export]]
-arma::mat rPKBD_ACG(int n, double lambda, arma::vec &mu){
+arma::mat rPKBD_ACG(int n, double rho, arma::vec &mu){
+  double lambda = 2*rho/(1+rho*rho);
   double norm = as_scalar(sum(pow(mu,2)));
   int p = mu.n_elem;
   arma::mat A(n, p);

@@ -13,7 +13,7 @@ PKBD_generatorC <- function(lambda = 0.95, d = 5){
 #' @title Random Sampling from PKBD Distributions using projected Saw distribution
 #' @description  \code{rPKBD_Saw} generates a random sample from PKBD distributions. 
 #' @param n number of random draws.
-#' @param lambda a numeric giving the concentration parameter.
+#' @param rho a numeric giving the concentration parameter.
 #' @param mu a numeric vector giving the mean direction parameter.
 #' @return  A vector the generated values.
 #' @details The function generates samples from PKBD using projected Saw distribution.
@@ -21,7 +21,8 @@ PKBD_generatorC <- function(lambda = 0.95, d = 5){
 #' @import Tinflex
 #' @export
 #' @importFrom stats rnorm
-rPKBD_Saw <-function(n, lambda, mu){
+rPKBD_Saw <-function(n, rho, mu){
+  lambda <- 2*rho/(1+rho*rho)
   d <- length(mu)
   mu <- mu/sqrt(sum(mu^2))
   if(lambda == 0) {

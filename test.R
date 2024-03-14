@@ -230,3 +230,87 @@ mvtnorm::dmvnorm(mix , mean = c(6.667134, 7.083449),
 
 
 predict(m1, as.data.frame(mvtnorm::rmvnorm(10, mean = c(1,1))))
+
+
+library(Rcpp) 
+library(microbenchmark)
+sourceCpp("src/sCauchy.cpp")
+
+mymclust <- function ( formula = .~. , diagonal = TRUE ){
+  retval <- new ("FLXMC" , weighted = TRUE ,
+                 formula = formula , dist = " Scauchy " ,
+                 name = " my model - based clustering ")
+  retval@defineComponent <- function ( para ) {
+    logLik <- function (x , y ) {
+      #print("new iteration")
+      #print(para$center)
+      print(para$mu)
+      print(para$rho)
+      logLik_sCauchy(y , mu_vec = para$mu , rho = para$rho)
+    }
+    predict <- function ( x ) {
+      print(x)
+    }
+    new ("FLXcomponent" , parameters =
+           list ( mu = para$mu , rho = para$rho ),
+         df = para$df , logLik = logLik , predict = predict )
+  }
+  retval@fit <- function (x , y , w , ...) {
+    #print(w)
+    n <- nrow(y)
+    d <- ncol(y)
+    para <- M_step_sCauchy(y, w, n, d)
+    #print(para)
+    df <- (d+1)
+    retval@defineComponent ( c ( para , df = df ))
+  }
+  retval
+}
+
+mix <- rbind(rsCauchy(10, 0.95, c(1,0,0)), rsCauchy(10, 0.9, c(-1,0,0)))
+m1 <- flexmix(mix ~ 1, k = 2, model = mymclust())
+
+
+sourceCpp("src/pkbd.cpp")
+sourceCpp("src/rpkbd.cpp")
+
+
+mymclust2 <- function ( formula = .~. , diagonal = TRUE ){
+  retval <- new ("FLXMC" , weighted = TRUE ,
+                 formula = formula , dist = " Scauchy " ,
+                 name = " my model - based clustering ")
+  retval@defineComponent <- function ( para ) {
+    logLik <- function (x , y ) {
+      #print("new iteration")
+      #print(para$center)
+      #print(para$mu)
+      #print(para$rho)
+      logLik_PKBD(y , mu_vec = para$mu , rho = para$rho)
+    }
+    predict <- function ( x ) {
+      print(x)
+    }
+    new ("FLXcomponent" , parameters =
+           list ( mu = para$mu , rho = para$rho ),
+         df = para$df , logLik = logLik , predict = predict )
+  }
+  retval@fit <- function (x , y , w , component) {
+    #print(w)
+    n <- nrow(y)
+    d <- ncol(y)
+    if(length(component)==0){
+      component <- list(mu = rep(0,d), rho = runif(1,0.7,0.95)) 
+      print("sup")
+    } 
+    print(component)
+    para <- M_step_PKBD(y, w, component$mu, component$rho, n, d)
+    #print(para)
+    df <- (d+1)
+    retval@defineComponent ( c ( para , df = df ))
+  }
+  retval
+}
+
+mix <- rbind(rPKBD_ACG(10, 2*0.95/(1+0.95^2), c(1,0,0)), rPKBD_ACG(10, 2*0.9/(1+0.9^2), c(-1,0,0)))
+m1 <- flexmix(mix ~ 1, k = 2, model = mymclust2())
+

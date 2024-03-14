@@ -88,7 +88,7 @@ arma::mat rsCauchy(int n, double rho, arma::vec &mu){
 
 
 // [[Rcpp::export]]
-void M_step_sCauchy(const arma::mat &data, arma::vec weights,
+List M_step_sCauchy(const arma::mat &data, arma::vec weights,
                     int n, int d, double tol = 1e-6, int maxiter = 100){ 
   
   d = d - 1;
@@ -96,7 +96,7 @@ void M_step_sCauchy(const arma::mat &data, arma::vec weights,
   arma::vec weighted_means = data.t() * weights;
   int niter = 0;
   double norm, rho0, results_rho;
-  arma::vec mu0, psi, psiold, results_mu;
+  arma::vec mu0, psi, psiold;
   arma::mat weighted_trans_data(n, d);
   psiold = 2*weighted_means;
   norm = arma::norm(weighted_means);
@@ -113,14 +113,15 @@ void M_step_sCauchy(const arma::mat &data, arma::vec weights,
     mu0 = psi/rho0;
     niter += 1;
   } 
-  results_mu = mu0;
+  arma::rowvec results_mu = mu0.t();
   results_rho = rho0;
-  Rcout << "rho_vector : " << results_rho << "\n";
-  Rcout << "results_mu : " << results_mu << "\n";
+  return List::create(Named("mu") = results_mu, Named("rho") = results_rho);
+  //Rcout << "rho_vector : " << results_rho << "\n";
+  //Rcout << "results_mu : " << results_mu << "\n";
 }  
 
 // [[Rcpp::export]]
-arma::vec logLik_PKBD(const arma::mat &data, arma::vec mu_vec, double rho){ 
+arma::vec logLik_sCauchy(const arma::mat &data, arma::vec mu_vec, double rho){ 
   
   double d = data.n_rows;
   return (d-1)*log(1-rho) - (d-1)*arma::log(1 + rho*rho -2*rho*data*mu_vec); 

@@ -32,7 +32,7 @@ double hybridnewton(double c1, double c2, double c3, double tol, int maxiter) {
 }
 
 // [[Rcpp::export]]
-void M_step_PKBD(const arma::mat &data, arma::vec weights, arma::vec mu_vec, double rho,
+List M_step_PKBD(const arma::mat &data, arma::vec weights, arma::vec mu_vec, double rho,
                  int n, int d, double tol = 1e-6, int maxiter = 100){ 
   double alpha = arma::mean(weights);
   
@@ -45,6 +45,7 @@ void M_step_PKBD(const arma::mat &data, arma::vec weights, arma::vec mu_vec, dou
   double sums_scaled_weight = sum(scaled_weight);
   
   rho = hybridnewton(d*sums_scaled_weight, 2*n*alpha, d*mu_norm, tol, maxiter); 
+  return List::create(Named("mu") = mu_vec, Named("rho") = rho);
   //Rcout << "rho: " << rho << "\n";
 } 
 
