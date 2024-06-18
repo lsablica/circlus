@@ -23,7 +23,7 @@ c3 = numVar*mu_denom_h
 library(Rcpp)
 library(microbenchmark)
 sourceCpp("src/pkbd.cpp")
-hybridnewton(c1, c2,c3)
+hybridnewton(c1, c2,c3, tol = 1e-9, maxiter = 100)
 
 microbenchmark((uniroot(
   f = root_func,
@@ -31,7 +31,7 @@ microbenchmark((uniroot(
   f.lower = root_func(0),
   f.upper = root_func(1),
   tol = 1e-9
-))$root, hybridnewton(c1, c2,c3), times = 1000)
+))$root, hybridnewton(c1, c2,c3, tol = 1e-9, maxiter = 100), times = 1000)
 
 
 
@@ -277,7 +277,7 @@ sourceCpp("src/rpkbd.cpp")
 
 mymclust2 <- function ( formula = .~. , diagonal = TRUE ){
   retval <- new ("FLXMC" , weighted = TRUE ,
-                 formula = formula , dist = " Scauchy " ,
+                 formula = formula , dist = " PKBD " ,
                  name = " my model - based clustering ")
   retval@defineComponent <- function ( para ) {
     logLik <- function (x , y ) {
@@ -311,6 +311,14 @@ mymclust2 <- function ( formula = .~. , diagonal = TRUE ){
   retval
 }
 
-mix <- rbind(rPKBD_ACG(10, 2*0.95/(1+0.95^2), c(1,0,0)), rPKBD_ACG(10, 2*0.9/(1+0.9^2), c(-1,0,0)))
+mix <- rbind(rPKBD_ACG(10, 0.95, c(1,0,0)), rPKBD_ACG(10, 0.9, c(-1,0,0)))
 m1 <- flexmix(mix ~ 1, k = 2, model = mymclust2())
+
+
+library(reticulate)
+np <- import("numpy")
+X <- rbind(rPKBD_ACG(1000, 0.95, c(1,0,0)), rPKBD_ACG(1000, 0.9, c(-1,0,0)))
+X <- np$asarray(X)
+np$save("X.npy",r_to_py(X))
+
 
