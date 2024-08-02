@@ -103,7 +103,7 @@ loglikCurrent <- -Inf
 
 mu_current ; rho_current
 M_step(dat, beta_matrix, mu_matrix, rho_vector, k =3, n = 50, d = 5, tol = 1e-6, maxiter = 100)
-M_step_PKBD(dat, beta_matrix[,1], mu_matrix[,1], rho_vector[1], n = 50, d = 5, tol = 1e-6, maxiter = 100)
+microbenchmark(M_step_PKBD(dat, beta_matrix[,1], mu_matrix[,1], rho_vector[1], n = 50, d = 5, tol = 1e-6, maxiter = 100), unit = "ms")
 
 
 library(Rcpp) 
@@ -322,3 +322,108 @@ X <- np$asarray(X)
 np$save("X.npy",r_to_py(X))
 
 
+library(reticulate)
+library(Rcpp) 
+library(microbenchmark)
+library(flexmix)
+library(tibble)
+
+setwd("~/GitHub/PKBD---code")
+sourceCpp("src/pkbd.cpp")
+sourceCpp("src/rpkbd.cpp")
+
+
+mymclust2 <- function ( formula = .~. , diagonal = TRUE ){
+  retval <- new ("FLXMC" , weighted = TRUE ,
+                 formula = formula , dist = " PKBD " ,
+                 name = " my model - based clustering ")
+  retval@defineComponent <- function ( para ) {
+    logLik <- function (x , y ) {
+      #print("new iteration")
+      #print(para$center)
+      #print(para$mu)
+      #print(para$rho)
+      logLik_PKBD(y , mu_vec = para$mu , rho = para$rho)
+    }
+    predict <- function ( x ) {
+      #print(x)
+    }
+    new ("FLXcomponent" , parameters =
+           list ( mu = para$mu , rho = para$rho ),
+         df = para$df , logLik = logLik , predict = predict )
+  }
+  retval@fit <- function (x , y , w , component) {
+    #print(w)
+    n <- nrow(y)
+    d <- ncol(y)
+    if(length(component)==0){
+      component <- list(mu = rep(0,d), rho = runif(1,0.7,0.95)) 
+      #print("sup")
+    } 
+    #print(component)
+    para <- M_step_PKBD(y, w, component$mu, component$rho, n, d)
+    #print(para)
+    print(d)
+    df <- (d+1)
+    retval@defineComponent ( c ( para , df = df ))
+  }
+  retval
+}
+
+mix <- rbind(rPKBD_ACG(10, 0.95, c(1,0,0)), rPKBD_ACG(10, 0.9, c(-1,0,0)))
+m1 <- flexmix(mix ~ 1, k = 2, model = mymclust2())
+
+
+pd <- import("pandas")
+aa <- pd$read_pickle("inst/data/df_final.pkl")
+df = data.frame(aa)
+colnames(df)
+tibble(df)
+
+X = t(sapply(df[,280], function(x) x))
+
+m2 <- flexmix(X ~ 1, k = 10, model = mymclust2())
+m2
+logLik(m2)
+tail(parameters(m2),1)
+save(df, m2, file = "m2.RData")
+
+assignments = apply(m2@posterior$scaled, 1, function(x) which(max(x) == x))
+df[assignments==4,1] # market segmentation
+df[assignments==6,1] #travel stuff
+df[assignments==7,1] # genetic stuff 
+df[assignments==8,1] # statistics
+df[assignments==3,1] # Clustering
+
+
+get_authors <- function(i){
+  cs = colSums(df[assignments==i,7:278])
+  cs = cs[cs>0]
+  sort(cs, decreasing = TRUE)
+}
+get_authors(1)
+get_abstracts <- function(i){
+  df[assignments==i,1]
+}
+get_abstracts(4)
+
+
+# 1 Tourism and Behavioral Studies
+# 2 Environmental and Biological Effects of Agrochemicals
+# 3 Mixture Models and Their Applications
+# 4 Market Segmentation Techniques
+# 5 Advanced Statistical Modelling Techniques
+# 6 Transportation and Mobility Studies
+# 7 Genetic Influences on Psychiatric and Behavioral Disorders
+# 8 Clustering and Classification Methods
+
+m5 <- flexmix(X ~ 1, k = 5, model = mymclust2())
+m5
+logLik(m5)
+save(m5, file = "m5.RData")
+
+
+m6 <- flexmix(X ~ 1, k = 6, model = mymclust2())
+m6
+logLik(m6)
+save(m6, file = "m6.RData")
