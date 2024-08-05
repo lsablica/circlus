@@ -158,7 +158,7 @@ W = torch_ones(Y$shape[1], 1, dtype = torch_float32())/3000
 
 
 model = PKBD(input_dim, output_dim)
-optimizer = optim_lbfgs(model$parameters, lr = LR, max_iter = 20, line_search_fn = "strong_wolfe")
+optimizer = optim_lbfgs(model$parameters, lr = LR, max_iter = 200, line_search_fn = "strong_wolfe")
 
 
 calc_loss <- function() {
@@ -170,12 +170,16 @@ calc_loss <- function() {
   loss$backward()
   loss
 }
-for(epoch in seq_len(4)){
+for(epoch in seq_len(1)){
   cat("\nIteration: ", epoch, "\n")
   optimizer$step(calc_loss)
 }
 res = model(X)
 res$mu[200]; res$mu[2000]; res$rho[200]; res$rho[2000]
+
+
+
+
 
 
 
