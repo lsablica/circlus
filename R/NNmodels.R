@@ -67,17 +67,26 @@ fitted <- convnet %>%
 PKBD <- nn_module(
   "PKBD",
   initialize = function(input_dim, output_dim) {
-    self$fc = nn_linear(input_dim, output_dim)
+    self$fc = nn_linear(input_dim, output_dim, bias = FALSE)
     self$output_dim = output_dim
   },
   forward = function(x) {
-    mu = self.fc(x)
-    normm = mu$norm(dim=-1, keepdim=True)
+    mu = self$fc(x)
+    normm = mu$norm(dim=-1, keepdim=TRUE)
     rho = normm / (1 + normm)
     mu = mu / normm
-    list(mu, rho)
+    list(mu = mu, rho = rho)
   }
 )
+
+pkbd_log_likelihood <- function(mu, rho, Y, W){
+  d = Y$shape[2]
+  term1 = (1-rho^2)$log()
+  term2 = 1 + rho^2 - 2* rho*((mu$unsqueeze(2)$matmul(Y$unsqueeze(3)))$squeeze(3))
+  neg_log_likelihood = (d/2)*term2$log() - term1
+  result = (neg_log_likelihood * W)$sum()
+  return(result)
+}
 
 
 # Example usage
@@ -87,13 +96,106 @@ EPOCHS = 100
 LR = 0.5
 batch_size = 32
 
-model = PKBD(input_dim, output_dim)
 
 
 library(Rcpp) 
 sourceCpp("~/Documents/GitHub/PKBD---code/src/rpkbd.cpp")
 Y = rPKBD_ACG(1000, 0.95, c(1,0,0))
 Y = torch_tensor(Y, dtype = torch_float32())
+X = torch_ones(Y$shape[1], input_dim, dtype = torch_float32())
+W = torch_ones(Y$shape[1], 1, dtype = torch_float32())/1000
+
+
+
+
+model = PKBD(input_dim, output_dim)
+optimizer = optim_adam(model$parameters, lr = LR)
+
+for(epoch in seq_len(EPOCHS)){
+  optimizer$zero_grad()
+  res = model(X)
+  print(res$rho[1]$item())
+  loss = pkbd_log_likelihood(res$mu, res$rho, Y, W)
+  print(loss$item())
+  loss$backward()
+  optimizer$step()
+}
+
+
+model = PKBD(input_dim, output_dim)
+optimizer = optim_lbfgs(model$parameters, lr = LR, max_iter = 20, line_search_fn = "strong_wolfe")
+
+
+calc_loss <- function() {
+  optimizer$zero_grad()
+  res = model(X)
+  print(res$rho[1]$item())
+  loss = pkbd_log_likelihood(res$mu, res$rho, Y, W)
+  print(loss$item())
+  loss$backward()
+  loss
+}
+for(epoch in seq_len(2)){
+  cat("\nIteration: ", epoch, "\n")
+  optimizer$step(calc_loss)
+}
+
+
+
+# Example usage
+input_dim = 2
+output_dim = 3
+EPOCHS = 2
+LR = 0.5
+batch_size = 32
+
+Y = rbind(rPKBD_ACG(1000, 0.95, c(1,0,0)), rPKBD_ACG(2000, 0.7, c(0,0,1)))
+Y = torch_tensor(Y, dtype = torch_float32())
+X = torch_tensor(cbind(rep(1,3000), c(rep(1,1000),rep(0,2000))),  dtype = torch_float32()) 
+W = torch_ones(Y$shape[1], 1, dtype = torch_float32())/3000
+
+
+
+
+model = PKBD(input_dim, output_dim)
+optimizer = optim_lbfgs(model$parameters, lr = LR, max_iter = 20, line_search_fn = "strong_wolfe")
+
+
+calc_loss <- function() {
+  optimizer$zero_grad()
+  res = model(X)
+  print(res$rho[1]$item())
+  loss = pkbd_log_likelihood(res$mu, res$rho, Y, W)
+  print(loss$item())
+  loss$backward()
+  loss
+}
+for(epoch in seq_len(4)){
+  cat("\nIteration: ", epoch, "\n")
+  optimizer$step(calc_loss)
+}
+res = model(X)
+res$mu[200]; res$mu[2000]; res$rho[200]; res$rho[2000]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+res = model(X)
+mu = res$mu
+rho = res$rho
+pkbd_log_likelihood(mu, rho, Y, W)
 
 
 
@@ -123,10 +225,10 @@ X = torch.ones(Y.shape[0], input_dim, dtype=torch.float32)
 X = X[:1000, :]
 X
 
-
 W = torch.ones(Y.shape[0], input_dim, dtype=torch.float32)/1000
 W.shape
 W
+
 
 model = PKBD(input_dim, output_dim)
 optimizer = optim.Adam(model.parameters(), lr=LR)
@@ -144,4 +246,3 @@ optimizer.step()
 
 
 model.fc.weight
-
