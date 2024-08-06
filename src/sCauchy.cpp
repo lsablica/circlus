@@ -4,7 +4,7 @@ using namespace std;
 
  
 
-// [[Rcpp::export]]
+
 double hyper2F1(const double b, const double c, const double x){
   double sum = 1.0;
   double element = 1.0;
@@ -22,20 +22,19 @@ double hyper2F1(const double b, const double c, const double x){
   return sum;
 } 
 
-// [[Rcpp::export]]
+
 double n1d(const double d, const double x){
   double z = 4*x/((1+x)*(1+x));
   return 1 + 2*(1-z)*(1-hyper2F1(d/2, d, z))/z;
 } 
 
 
-// [[Rcpp::export]]
 double n1d_deriv(const double d, const double x){
   double z = 4*x/((1+x)*(1+x));
   double F = hyper2F1(d/2, d, z);
   return (1/2-1/(2*x*x))*(1-F) - (1-z)*((d/2+1)*hyper2F1(d/2+2, d+1, z) + d*(1-F)/z )/z;
 } 
-// [[Rcpp::export]]
+
 double hybridnewton(double d, double target, double tol = 1e-6, int maxiter = 100) {
   double x,a,b;
   a = 0;
@@ -64,7 +63,7 @@ double hybridnewton(double d, double target, double tol = 1e-6, int maxiter = 10
   return x;
 }
 
-// [[Rcpp::export]]
+
 arma::mat Moebius_S(arma::mat X, arma::vec mu, double rho){
   
   arma::mat Y = (1-rho*rho)*(X.each_row() + rho*mu.t());
