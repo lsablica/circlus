@@ -142,6 +142,84 @@ for(epoch in seq_len(2)){
 
 
 
+
+
+
+
+
+Y = torch_tensor(mix, dtype = torch_float32())
+X = torch_ones(Y$shape[1], 1, dtype = torch_float32())
+W = torch_tensor(matrix(c(0.0455,
+                        0.0455,
+                        0.0455,
+                        0.4091,
+                        0.0455,
+                        0.4091)), dtype = torch_float32())
+
+model = PKBD(input_dim, output_dim)
+optimizer = optim_adam(model$parameters, lr = LR)
+
+for(epoch in seq_len(50)){
+  optimizer$zero_grad()
+  res = model(X)
+  print(res$mu[1,])
+  loss = pkbd_log_likelihood(res$mu, res$rho, Y, W)
+  print(loss$item())
+  loss$backward()
+  optimizer$step()
+}
+
+
+model = PKBD(input_dim, output_dim)
+optimizer = optim_lbfgs(model$parameters, lr = LR, max_iter = 20, line_search_fn = "strong_wolfe")
+
+
+calc_loss <- function() {
+  optimizer$zero_grad()
+  res = model(X)
+  print(res$mu[1,])
+  loss = pkbd_log_likelihood(res$mu, res$rho, Y, W)
+  print(loss$item())
+  loss$backward()
+  loss
+}
+for(epoch in seq_len(2)){
+  cat("\nIteration: ", epoch, "\n")
+  optimizer$step(calc_loss)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Example usage
 input_dim = 2
 output_dim = 3
