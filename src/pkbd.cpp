@@ -54,7 +54,7 @@ List M_step_PKBD(const arma::mat &data, arma::vec weights, arma::vec mu_vec, dou
 arma::vec logLik_PKBD(const arma::mat &data, arma::vec mu_vec, double rho){ 
   
   double d = data.n_rows;
-  return log(1-rho) - d*arma::log(1 + rho*rho -2*rho*data*mu_vec)/2; 
+  return log(1-rho*rho) - d*arma::log(1 + rho*rho -2*rho*data*mu_vec)/2; 
 } 
 
 

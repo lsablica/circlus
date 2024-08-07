@@ -328,3 +328,9 @@ optimizer.step()
 
 
 model.fc.weight
+
+
+
+
+
+

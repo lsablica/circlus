@@ -427,3 +427,29 @@ m6 <- flexmix(X ~ 1, k = 6, model = mymclust2())
 m6
 logLik(m6)
 save(m6, file = "m6.RData")
+
+
+######################33
+
+
+mix <- rbind(rPKBD_ACG(300, 0.95, c(1,0,0)), rPKBD_ACG(300, 0.9, c(-1,0,0)))
+m1 <- flexmix(mix ~ 1, k = 2, model = PKBDNN_clust())
+
+
+p =  PKBDNN_clust()
+
+
+library(rgl)
+rgl.open()
+view3d( theta = 195, phi = 10, zoom =0.5)
+rgl.bg(color = "white")
+rgl.points(mix[,1],mix[,2],mix[,3], ylim=c(-1,1), col = c(rep(1,300), rep(2,300)) ,xlim=c(-1,1), zlim = c(-1,1), xlab = "x", ylab = "y", zlab = "z", alpha = 0.8)
+spheres3d(x = 0, y = 0, z = 0, radius = 0.98, col = "green", alpha = 0.6, back = "lines")
+rgl.lines(c(-1.5,1.5), c(0, 0), c(0, 0), color = "black")
+rgl.lines(c(0, 0), c(-1.5,1.5), c(0, 0), color = "blue")
+rgl.lines(c(0, 0), c(0, 0), c(-1.5,1.5), color = "red")
+
+
+p = PKBDNN_clust()
+
+
