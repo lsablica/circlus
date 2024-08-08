@@ -122,7 +122,7 @@ List M_step_sCauchy(const arma::mat &data, arma::vec weights,
 // [[Rcpp::export]]
 arma::vec logLik_sCauchy(const arma::mat &data, arma::vec mu_vec, double rho){ 
   
-  double d = data.n_rows;
+  double d = data.n_cols;
   return (d-1)*log(1-rho*rho) - (d-1)*arma::log(1 + rho*rho -2*rho*data*mu_vec); 
 } 
 

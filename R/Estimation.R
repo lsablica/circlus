@@ -138,7 +138,7 @@ SCauchyNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.5, max_iter = 200
       para_new$rho <- torch::as_array(para$rho)
       para_new
     }
-    new ("FLXcomponent" , parameters = list(mu = torch::as_array(para$mu) , rho = torch::as_array(para$rho)),
+    new ("FLXcomponent" , parameters = list(mu = torch::as_array(para$mu) , rho = torch::as_array(para$rho), model = NNmodel),
          df = para$df , logLik = logLik , predict = predict )
   }
   retval@fit <- function (x , y , w , ...) {
@@ -152,6 +152,10 @@ SCauchyNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.5, max_iter = 200
     X = torch_tensor(x)
     W = torch_tensor(matrix(w/sum(w), ncol = 1))
     
+    if(length(component)==0){
+      component$model = Spherical(input_dim, output_dim)
+    } 
+    NNmodel = component$model
     NNmodel = Spherical(input_dim, output_dim)
     optimizer = optim_lbfgs(NNmodel$parameters, lr = LR, max_iter = max_iter, line_search_fn = line_search_fn)
     NNmodel$train()
@@ -235,10 +239,12 @@ PKBDNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.5, max_iter = 200, l
       para_new$rho <- torch::as_array(para$rho)
       para_new
     }
-    new ("FLXcomponent" , parameters = list(mu = torch::as_array(para$mu) , rho = torch::as_array(para$rho)),
-         df = para$df , logLik = logLik , predict = predict )
+    new ("FLXcomponent" , parameters = list(mu = torch::as_array(para$mu) , rho = torch::as_array(para$rho), model = NNmodel),
+         df = para$df , logLik = logLik , predict = predict)
   }
-  retval@fit <- function (x , y , w , ...) {
+  
+  
+  retval@fit <- function (x , y , w , component) {
     n <- nrow(y)
     d <- ncol(y)
     input_dim = ncol(x)
@@ -248,8 +254,12 @@ PKBDNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.5, max_iter = 200, l
     Y = torch_tensor(y)
     X = torch_tensor(x)
     W = torch_tensor(matrix(w/sum(w), ncol = 1))
+
     
-    NNmodel = Spherical(input_dim, output_dim)
+    if(length(component)==0){
+      component$model = Spherical(input_dim, output_dim)
+    } 
+    NNmodel = component$model
     optimizer = optim_lbfgs(NNmodel$parameters, lr = LR, max_iter = max_iter, line_search_fn = line_search_fn)
     NNmodel$train()
     

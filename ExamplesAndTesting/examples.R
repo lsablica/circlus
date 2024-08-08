@@ -460,4 +460,26 @@ rgl.lines(c(0, 0), c(0, 0), c(-1.5,1.5), color = "red")
 
 p = PKBDNN_clust()
 
+PKBD_abstract_6@components[[1]][[1]]@logLik(matrix(rep(1,129), ncol = 1), OAI)
+PKBDNN_abstract_6@components[[1]][[1]]@logLik(matrix(rep(1,129), ncol = 1), OAI)
 
+
+
+c1model = get("NNmodel", env = environment(PKBDNN_abstract_6b@components[[1]][[1]]@logLik ))
+param = c1model(torch_tensor(matrix(rep(1,129), ncol = 1)))
+mus = param$mu
+mu = as_array(param$mu)[1,]
+rhos = param$rho
+rho = as_array(param$rho)[1,]
+
+circlus:::logLik_PKBD(OAI, mu, rho)
+logLik_PKBD(OAI[c(1,2, 3),], mu, rho) 
+
+pkbd_log_likelihood <- function(mu, rho, Y){
+  d = Y$shape[2]
+  term1 = (1-rho^2)$log()
+  term2 = 1 + rho^2 - 2* rho*((mu$unsqueeze(2)$matmul(Y$unsqueeze(3)))$squeeze(3))
+  log_likelihood = term1 - (d/2)*term2$log()
+  return(as_array(log_likelihood))
+}
+pkbd_log_likelihood(mus[1,drop = F], rhos[1,drop = F], torch_tensor(OAI)[1, drop = F])
