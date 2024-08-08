@@ -4,6 +4,7 @@
 #' @return  Object of type FLXcomponent for flexmix estimation.
 #' @rdname SCauchy_clust
 #' @import flexmix
+#' @importFrom methods new
 #' @export
 SCauchy_clust <- function (formula = .~.){
   retval <- new ("FLXMC", weighted = TRUE ,
@@ -37,6 +38,8 @@ SCauchy_clust <- function (formula = .~.){
 #' @return Object of type FLXcomponent for flexmix estimation.
 #' @rdname PKBD_clust
 #' @import flexmix
+#' @importFrom methods new
+#' @importFrom stats runif
 #' @export
 PKBD_clust <- function (formula = .~.){
   retval <- new ("FLXMC" , weighted = TRUE ,
@@ -111,6 +114,7 @@ scauchy_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
 #' @rdname SCauchyNN_clust
 #' @import flexmix
 #' @import torch
+#' @importFrom methods new
 #' @export
 SCauchyNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.5, max_iter = 200, line_search_fn = "strong_wolfe"){
   retval <- new ("FLXMC" , weighted = TRUE , formula = formula , dist = " PKBD " ,
@@ -212,6 +216,7 @@ pkbd_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
 #' @rdname PKBDNN_clust
 #' @import flexmix
 #' @import torch
+#' @importFrom methods new
 #' @export
 PKBDNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.5, max_iter = 200, line_search_fn = "strong_wolfe"){
   retval <- new ("FLXMC" , weighted = TRUE , formula = formula , dist = " PKBD " ,

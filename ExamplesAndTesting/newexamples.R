@@ -28,7 +28,7 @@ PKBDNN_abstract_6@logLik
 PKBDNN_abstract_8 <- flexmix(OAI ~ 1, k = 8, model = circlus::PKBDNN_clust(LR = 0.05),
                               control = list(verbose = 1))
 
-PKBDNN_abstract_6b <- flexmix(OAI ~ 1 + pages, k = 6, model = circlus::PKBDNN_clust(LR = 0.01),
+PKBDNN_abstract_6b <- flexmix(OAI ~ 1 + pages, k = 6, model = circlus::PKBDNN_clust(LR = 0.005, max_iter = 20),
                               control = list(verbose = 1, nrep = 10))
 
 
