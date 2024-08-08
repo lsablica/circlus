@@ -2,7 +2,7 @@
 using namespace Rcpp;
 using namespace std;
 
-// [[Rcpp::export]]
+
 double hybridnewton(double c1, double c2, double c3, double tol, int maxiter) {
   double x,a,b;
   a = 0;

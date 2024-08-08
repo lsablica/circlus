@@ -4,12 +4,12 @@
 \alias{rPKBD_ACG}
 \title{Random Sampling from PKBD Distributions using ACG Envelopes}
 \usage{
-rPKBD_ACG(n, lambda, mu)
+rPKBD_ACG(n, rho, mu)
 }
 \arguments{
 \item{n}{number of random draws.}
 
-\item{lambda}{a numeric giving the concentration parameter.}
+\item{rho}{a numeric giving the concentration parameter.}
 
 \item{mu}{a numeric vector giving the mean direction parameter.}
 }

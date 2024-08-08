@@ -12,7 +12,7 @@ using namespace Rcpp;
 //' @return  A vector the generated values.
 //' @details The function generates samples from PKBD using ACG envelopes
 //' @rdname rPKBD_ACG
-//' @useDynLib PKBD
+//' @useDynLib circlus
 //' @importFrom Rcpp evalCpp
 //' @export
 // [[Rcpp::export]]

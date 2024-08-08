@@ -11,26 +11,104 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// M_step_PKBD
+List M_step_PKBD(const arma::mat& data, arma::vec weights, arma::vec mu_vec, double rho, int n, int d, double tol, int maxiter);
+RcppExport SEXP _circlus_M_step_PKBD(SEXP dataSEXP, SEXP weightsSEXP, SEXP mu_vecSEXP, SEXP rhoSEXP, SEXP nSEXP, SEXP dSEXP, SEXP tolSEXP, SEXP maxiterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type mu_vec(mu_vecSEXP);
+    Rcpp::traits::input_parameter< double >::type rho(rhoSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< int >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiter(maxiterSEXP);
+    rcpp_result_gen = Rcpp::wrap(M_step_PKBD(data, weights, mu_vec, rho, n, d, tol, maxiter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// logLik_PKBD
+arma::vec logLik_PKBD(const arma::mat& data, arma::vec mu_vec, double rho);
+RcppExport SEXP _circlus_logLik_PKBD(SEXP dataSEXP, SEXP mu_vecSEXP, SEXP rhoSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type mu_vec(mu_vecSEXP);
+    Rcpp::traits::input_parameter< double >::type rho(rhoSEXP);
+    rcpp_result_gen = Rcpp::wrap(logLik_PKBD(data, mu_vec, rho));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rPKBD_ACG
-arma::mat rPKBD_ACG(int n, double lambda, arma::vec& mu);
-RcppExport SEXP _PKBD_rPKBD_ACG(SEXP nSEXP, SEXP lambdaSEXP, SEXP muSEXP) {
+arma::mat rPKBD_ACG(int n, double rho, arma::vec& mu);
+RcppExport SEXP _circlus_rPKBD_ACG(SEXP nSEXP, SEXP rhoSEXP, SEXP muSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< double >::type rho(rhoSEXP);
     Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
-    rcpp_result_gen = Rcpp::wrap(rPKBD_ACG(n, lambda, mu));
+    rcpp_result_gen = Rcpp::wrap(rPKBD_ACG(n, rho, mu));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rsCauchy
+arma::mat rsCauchy(int n, double rho, arma::vec& mu);
+RcppExport SEXP _circlus_rsCauchy(SEXP nSEXP, SEXP rhoSEXP, SEXP muSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< double >::type rho(rhoSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    rcpp_result_gen = Rcpp::wrap(rsCauchy(n, rho, mu));
+    return rcpp_result_gen;
+END_RCPP
+}
+// M_step_sCauchy
+List M_step_sCauchy(const arma::mat& data, arma::vec weights, int n, int d, double tol, int maxiter);
+RcppExport SEXP _circlus_M_step_sCauchy(SEXP dataSEXP, SEXP weightsSEXP, SEXP nSEXP, SEXP dSEXP, SEXP tolSEXP, SEXP maxiterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< int >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiter(maxiterSEXP);
+    rcpp_result_gen = Rcpp::wrap(M_step_sCauchy(data, weights, n, d, tol, maxiter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// logLik_sCauchy
+arma::vec logLik_sCauchy(const arma::mat& data, arma::vec mu_vec, double rho);
+RcppExport SEXP _circlus_logLik_sCauchy(SEXP dataSEXP, SEXP mu_vecSEXP, SEXP rhoSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type mu_vec(mu_vecSEXP);
+    Rcpp::traits::input_parameter< double >::type rho(rhoSEXP);
+    rcpp_result_gen = Rcpp::wrap(logLik_sCauchy(data, mu_vec, rho));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_PKBD_rPKBD_ACG", (DL_FUNC) &_PKBD_rPKBD_ACG, 3},
+    {"_circlus_M_step_PKBD", (DL_FUNC) &_circlus_M_step_PKBD, 8},
+    {"_circlus_logLik_PKBD", (DL_FUNC) &_circlus_logLik_PKBD, 3},
+    {"_circlus_rPKBD_ACG", (DL_FUNC) &_circlus_rPKBD_ACG, 3},
+    {"_circlus_rsCauchy", (DL_FUNC) &_circlus_rsCauchy, 3},
+    {"_circlus_M_step_sCauchy", (DL_FUNC) &_circlus_M_step_sCauchy, 6},
+    {"_circlus_logLik_sCauchy", (DL_FUNC) &_circlus_logLik_sCauchy, 3},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_PKBD(DllInfo *dll) {
+RcppExport void R_init_circlus(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

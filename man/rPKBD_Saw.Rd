@@ -4,12 +4,12 @@
 \alias{rPKBD_Saw}
 \title{Random Sampling from PKBD Distributions using projected Saw distribution}
 \usage{
-rPKBD_Saw(n, lambda, mu)
+rPKBD_Saw(n, rho, mu)
 }
 \arguments{
 \item{n}{number of random draws.}
 
-\item{lambda}{a numeric giving the concentration parameter.}
+\item{rho}{a numeric giving the concentration parameter.}
 
 \item{mu}{a numeric vector giving the mean direction parameter.}
 }
