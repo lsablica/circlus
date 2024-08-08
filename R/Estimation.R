@@ -1,23 +1,20 @@
-library(flexmix)
-library(Rcpp) 
-library(torch)
-
-sourceCpp("~/Documents/GitHub/PKBD---code/src/pkbd.cpp")
-sourceCpp("~/Documents/GitHub/PKBD---code/src/rpkbd.cpp")
-sourceCpp("~/Documents/GitHub/PKBD---code/src/sCauchy.cpp")
-
-SCauchy_clust <- function ( formula = .~. , diagonal = TRUE ){
+#' @title Spherical Cauchy routine for flexmix
+#' @description  \code{SCauchy_clust} offers a flexmix routine for spherical Cauchy distribution. 
+#' @param formula formula
+#' @return  Object of type FLXcomponent for flexmix estimation.
+#' @rdname SCauchy_clust
+#' @import flexmix
+#' @export
+SCauchy_clust <- function (formula = .~.){
   retval <- new ("FLXMC", weighted = TRUE ,
                  formula = formula , dist = " Scauchy " ,
                  name = " Spherical Cauchy - based clustering ")
   retval@defineComponent <- function (para, df) {
     logLik <- function (x, y){
-      print(para$mu)
-      print(para$rho)
       logLik_sCauchy(y , mu_vec = para$mu , rho = para$rho)
     }
     predict <- function(x){
-      print(x)
+      para$mu
     }
     new ("FLXcomponent" , parameters = list(mu = para$mu, rho = para$rho),
          df = para$df , logLik = logLik , predict = predict)
@@ -34,7 +31,14 @@ SCauchy_clust <- function ( formula = .~. , diagonal = TRUE ){
 
 #################################################################################################
 
-PKBD_clust <- function ( formula = .~. , diagonal = TRUE ){
+#' @title PKBD routine for flexmix
+#' @description  \code{PKBD_clust} offers a flexmix routine for PKBD distribution. 
+#' @param formula formula
+#' @return Object of type FLXcomponent for flexmix estimation.
+#' @rdname PKBD_clust
+#' @import flexmix
+#' @export
+PKBD_clust <- function (formula = .~.){
   retval <- new ("FLXMC" , weighted = TRUE ,
                  formula = formula , dist = " PKBD " ,
                  name = " PKBD - based clustering ")
@@ -96,7 +100,18 @@ scauchy_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
   return(result)
 }
 
-
+#' @title Spherical Cauchy routine using neural networks for flexmix
+#' @description  \code{SCauchyNN_clust} offers a flexmix routine for spherical Cauchy distribution using neural networks. 
+#' @param formula formula
+#' @param EPOCHS number of epochs in the M-step estimation (default: 1)
+#' @param LR learning rate used in the M-steo estimation (default: 0.5)
+#' @param max_iter maximum number of iterations of the LBFGS optimizer (default: 200)
+#' @param line_search_fn method used for line search in LBFGS (default: "strong_wolfe")
+#' @return Object of type FLXcomponent for flexmix estimation.
+#' @rdname SCauchyNN_clust
+#' @import flexmix
+#' @import torch
+#' @export
 SCauchyNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.5, max_iter = 200, line_search_fn = "strong_wolfe"){
   retval <- new ("FLXMC" , weighted = TRUE , formula = formula , dist = " PKBD " ,
                  name = " PKBD - based clustering using neural networks")
@@ -182,6 +197,18 @@ pkbd_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
   return(result)
 }
 
+#' @title PKBD routine using neural networks for flexmix
+#' @description  \code{PKBDNN_clust} offers a flexmix routine for PKBD distribution using neural networks. 
+#' @param formula formula
+#' @param EPOCHS number of epochs in the M-step estimation (default: 1)
+#' @param LR learning rate used in the M-steo estimation (default: 0.5)
+#' @param max_iter maximum number of iterations of the LBFGS optimizer (default: 200)
+#' @param line_search_fn method used for line search in LBFGS (default: "strong_wolfe")
+#' @return Object of type FLXcomponent for flexmix estimation.
+#' @rdname PKBDNN_clust
+#' @import flexmix
+#' @import torch
+#' @export
 PKBDNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.5, max_iter = 200, line_search_fn = "strong_wolfe"){
   retval <- new ("FLXMC" , weighted = TRUE , formula = formula , dist = " PKBD " ,
                  name = " PKBD - based clustering using neural networks")

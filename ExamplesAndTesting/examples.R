@@ -430,6 +430,14 @@ save(m6, file = "m6.RData")
 
 
 ######################33
+library(flexmix)
+library(Rcpp) 
+library(torch)
+
+sourceCpp("~/Documents/GitHub/PKBD---code/src/pkbd.cpp")
+sourceCpp("~/Documents/GitHub/PKBD---code/src/rpkbd.cpp")
+sourceCpp("~/Documents/GitHub/PKBD---code/src/sCauchy.cpp")
+source("~/Documents/GitHub/PKBD---code/R/Estimation.R")
 
 
 mix <- rbind(rPKBD_ACG(300, 0.95, c(1,0,0)), rPKBD_ACG(300, 0.9, c(-1,0,0)))
