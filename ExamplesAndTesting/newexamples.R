@@ -30,5 +30,5 @@ PKBDNN_abstract_8 <- flexmix(OAI ~ 1, k = 8, model = circlus::PKBDNN_clust(LR = 
 
 PKBDNN_abstract_6b <- flexmix(OAI ~ 1 + pages, k = 6, model = circlus::PKBDNN_clust(LR = 0.01),
                               control = list(verbose = 1, nrep = 10))
-
+saveRDS(PKBDNN_abstract_6b, file = "ExamplesAndTesting/PKBD6to5withpagesand107kloglik.RDS")
 
