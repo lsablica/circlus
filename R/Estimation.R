@@ -110,6 +110,7 @@ scauchy_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
 #' @param LR learning rate used in the M-steo estimation (default: 0.5)
 #' @param max_iter maximum number of iterations of the LBFGS optimizer (default: 200)
 #' @param line_search_fn method used for line search in LBFGS (default: "strong_wolfe")
+#' @param free_iter number of initial iterations for which the model in M-step is fully reseted (default: 3)
 #' @return Object of type FLXcomponent for flexmix estimation.
 #' @rdname SCauchyNN_clust
 #' @import flexmix
@@ -146,6 +147,8 @@ SCauchyNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.5, max_iter = 200
          df = para$df , logLik = logLik , predict = predict )
   }
   retval@fit <- function (x , y , w , ...) {
+    
+    iteration <- eval(quote(get("iter")),parent.frame(n=8))
     n <- nrow(y)
     d <- ncol(y)
     input_dim = ncol(x)
@@ -156,7 +159,7 @@ SCauchyNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.5, max_iter = 200
     X = torch_tensor(x)
     W = torch_tensor(matrix(w/sum(w), ncol = 1))
     
-    if(length(component)==0){
+    if(iteration <= free_iter){
       component$model = Spherical(input_dim, output_dim)
     } 
     NNmodel = component$model
@@ -212,13 +215,14 @@ pkbd_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
 #' @param LR learning rate used in the M-steo estimation (default: 0.5)
 #' @param max_iter maximum number of iterations of the LBFGS optimizer (default: 200)
 #' @param line_search_fn method used for line search in LBFGS (default: "strong_wolfe")
+#' @param free_iter number of initial iterations for which the model in M-step is fully reseted (default: 3)
 #' @return Object of type FLXcomponent for flexmix estimation.
 #' @rdname PKBDNN_clust
 #' @import flexmix
 #' @import torch
 #' @importFrom methods new
 #' @export
-PKBDNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.5, max_iter = 200, line_search_fn = "strong_wolfe"){
+PKBDNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.5, max_iter = 200, line_search_fn = "strong_wolfe", free_iter = 3){
   retval <- new ("FLXMC" , weighted = TRUE , formula = formula , dist = " PKBD " ,
                  name = " PKBD - based clustering using neural networks")
   retval@defineComponent <- function (para, df) {
@@ -250,6 +254,8 @@ PKBDNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.5, max_iter = 200, l
   
   
   retval@fit <- function (x , y , w , component) {
+    
+    iteration <- eval(quote(get("iter")),parent.frame(n=8))
     n <- nrow(y)
     d <- ncol(y)
     input_dim = ncol(x)
@@ -261,7 +267,7 @@ PKBDNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.5, max_iter = 200, l
     W = torch_tensor(matrix(w/sum(w), ncol = 1))
 
     
-    if(length(component)==0){
+    if(iteration <= free_iter){
       component$model = Spherical(input_dim, output_dim)
     } 
     NNmodel = component$model

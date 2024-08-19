@@ -22,6 +22,8 @@ SCauchyNN_clust(
 \item{max_iter}{maximum number of iterations of the LBFGS optimizer (default: 200)}
 
 \item{line_search_fn}{method used for line search in LBFGS (default: "strong_wolfe")}
+
+\item{free_iter}{number of initial iterations for which the model in M-step is fully reseted (default: 3)}
 }
 \value{
 Object of type FLXcomponent for flexmix estimation.
