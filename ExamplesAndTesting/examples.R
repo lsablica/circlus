@@ -483,3 +483,58 @@ pkbd_log_likelihood <- function(mu, rho, Y){
   return(as_array(log_likelihood))
 }
 pkbd_log_likelihood(mus[1,drop = F], rhos[1,drop = F], torch_tensor(OAI)[1, drop = F])
+
+
+
+component <- PKBDNN_abstract_6b_adam@components[[1]]
+model = PKBDNN_abstract_6b_adam@model[[1]]
+calc_hessian <- function(PKBDNN_abstract_6b_adam){
+  X = PKBDNN_abstract_6b_adam@model[[1]]@x
+  X = torch_tensor(X, requires_grad = TRUE)
+  Y = PKBDNN_abstract_6b_adam@model[[1]]@y
+  Y = torch_tensor(Y)
+  W = PKBDNN_abstract_6b_adam@posterior$scaled
+  
+  W = torch_tensor(matrix(W[,1]/sum(W[,1]), ncol = 1))
+  model <- PKBDNN_abstract_6b_adam@components[[1]][[1]]@parameters$model
+  
+  
+  full <- function(X){
+    res = model(X)
+    loss = pkbd_weighted_neg_log_likelihood(res$mu, res$rho, Y, W)
+    loss
+  }
+  grads <- torch::autograd_grad(full(X), X, retain_graph = TRUE, create_graph = TRUE)
+  
+  model
+  
+}
+
+
+data.pca <- princomp(OAI)
+summary(data.pca)
+
+pc <- prcomp(OAI,
+             center = TRUE,
+             scale. = TRUE)
+attributes(pc)
+
+
+
+covariancematrix <- cov(OAI)
+covariancematrix
+eigenvaluesvector<-eigen(covariancematrix)
+sortindice<-order(eigenvaluesvector$values,decreasing=TRUE)
+sorteigenvalues<-eigenvaluesvector$values[sortindice]
+sorteigenvector<-eigenvaluesvector$vectors[,sortindice]
+sorteigenvalues
+sorteigenvector
+principalcomponent<-128
+selectedcomponents<- sorteigenvector[,1:principalcomponent]
+selectedcomponents
+#reduced data
+reduceddata <- OAI %*% selectedcomponents
+reduceddata
+
+saveRDS(object = reduceddata/sqrt(rowSums(reduceddata^2)), "~/Documents/GitHub/PKBD---code/ExamplesAndTesting/df_reduced.RDS")
+
