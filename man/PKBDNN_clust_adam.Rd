@@ -12,32 +12,23 @@ PKBDNN_clust_adam(
   line_search_fn = "strong_wolfe",
   free_iter = 5
 )
-
-PKBDNN_clust_adam(
-  formula = . ~ .,
-  EPOCHS = 100,
-  LR = 0.1,
-  max_iter = 200,
-  line_search_fn = "strong_wolfe",
-  free_iter = 5
-)
 }
 \arguments{
 \item{formula}{formula}
 
-\item{EPOCHS}{number of epochs in the M-step estimation (default: 1)}
+\item{EPOCHS}{number of epochs in the M-step estimation (default: 100)}
 
-\item{LR}{learning rate used in the M-steo estimation (default: 0.5)}
+\item{LR}{learning rate used in the M-steo estimation (default: 0.1)}
 
-\item{free_iter}{number of initial iterations for which the model in M-step is fully reseted (default: 3)}
+\item{max_iter}{maximum number of iterations of the LBFGS optimizer (default: 200)}
+
+\item{line_search_fn}{method used for line search in LBFGS (default: "strong_wolfe")}
+
+\item{free_iter}{number of initial iterations for which the model in M-step is fully reseted (default: 5)}
 }
 \value{
-Object of type FLXcomponent for flexmix estimation.
-
-Object of type FLXcomponent for flexmix estimation.
+Object of type FLXMC for flexmix estimation.
 }
 \description{
-\code{PKBDNN_clust_adam} offers a flexmix routine for PKBD distribution using neural networks and adam optimizer.
-
 \code{PKBDNN_clust_adam} offers a flexmix routine for PKBD distribution using neural networks and adam optimizer.
 }

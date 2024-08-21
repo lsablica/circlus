@@ -27,7 +27,7 @@ PKBDNN_clust(
 \item{free_iter}{number of initial iterations for which the model in M-step is fully reseted (default: 3)}
 }
 \value{
-Object of type FLXcomponent for flexmix estimation.
+Object of type FLXMC for flexmix estimation.
 }
 \description{
 \code{PKBDNN_clust} offers a flexmix routine for PKBD distribution using neural networks.

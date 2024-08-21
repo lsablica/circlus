@@ -10,7 +10,7 @@ SCauchy_clust(formula = . ~ .)
 \item{formula}{formula}
 }
 \value{
-Object of type FLXcomponent for flexmix estimation.
+Object of type FLXMC for flexmix estimation.
 }
 \description{
 \code{SCauchy_clust} offers a flexmix routine for spherical Cauchy distribution.

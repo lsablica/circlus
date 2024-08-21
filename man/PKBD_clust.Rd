@@ -10,7 +10,7 @@ PKBD_clust(formula = . ~ .)
 \item{formula}{formula}
 }
 \value{
-Object of type FLXcomponent for flexmix estimation.
+Object of type FLXMC for flexmix estimation.
 }
 \description{
 \code{PKBD_clust} offers a flexmix routine for PKBD distribution.
