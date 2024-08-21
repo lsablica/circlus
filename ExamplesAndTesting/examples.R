@@ -375,7 +375,7 @@ m1 <- flexmix(mix ~ 1, k = 2, model = mymclust2())
 
 
 pd <- import("pandas")
-aa <- pd$read_pickle("inst/data/df_final.pkl")
+aa <- pd$read_pickle("/home/lukas/Documents/GitHub/PKBD---code/ExamplesAndTesting/Work/inst/data/df_final.pkl")
 df = data.frame(aa)
 colnames(df)
 tibble(df)
