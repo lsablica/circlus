@@ -97,7 +97,7 @@ names(dataset_s) <- c("Genetic Influences on Psychiatric and Behavioral Disorder
 
 dataset_corpus <- lapply(dataset_s, function(x) VCorpus(VectorSource( toString(x) )))
 dataset_corpus_all <- dataset_corpus[[1]]
-for (i in 2:length(unique_labels)) { dataset_corpus_all <- c(dataset_corpus_all,dataset_corpus[[i]]) }
+for (i in 2:8) { dataset_corpus_all <- c(dataset_corpus_all,dataset_corpus[[i]]) }
 dataset_corpus_all <- tm_map(dataset_corpus_all, removePunctuation)
 dataset_corpus_all <- tm_map(dataset_corpus_all, removeNumbers)
 dataset_corpus_all <- tm_map(dataset_corpus_all, function(x) removeWords(x,stopwords("english")))
@@ -109,7 +109,7 @@ colnames(document_tm_mat) <- names(dataset_s)
 index <- as.logical(sapply(rownames(document_tm_mat), function(x) (nchar(x)>3) ))
 document_tm_clean_mat_s <- document_tm_mat[index,]
 comparison.cloud(document_tm_clean_mat_s,max.words=400,random.order=FALSE,c(4,0.5), title.size=0.6, use.r.layout = TRUE)
-
+legend("bottomright", legend=names(dataset_s), cex=0.5, text.col = brewer.pal(8, "Dark2"))
 
 comparison.cloud <- function (term.matrix, scale = c(4, 0.5), max.words = 300, random.order = FALSE, 
           rot.per = 0.1, colors = brewer.pal(max(3, ncol(term.matrix)), 
@@ -183,30 +183,7 @@ comparison.cloud <- function (term.matrix, scale = c(4, 0.5), max.words = 300, r
   }
   title.bg.colors <- rep(title.bg.colors, length.out = ndoc)
   adj <- -0.03
-  for (i in 1:ndoc) {
-    th <- mean(thetaBins[i:(i + 1)])
-    word <- docnames[i]
-    wid <- strwidth(word, cex = title.size) * 1.2
-    ht <- strheight(word, cex = title.size) * 1.2
-    x1 <- 0.5 + 0.5 * cos(th)*0.5
-    y1 <- 0.5 + 0.5 * sin(th) + adj
-    adj = -adj
-    rect(x1 - 0.5 * wid*0.8, y1 - 0.5 * ht, x1 + 0.5 * wid*0.8, y1 + 
-           0.5 * ht, col = title.bg.colors[i], border = "transparent")
-    if (is.null(title.colors)) {
-      if (match.colors) {
-        text(x1, y1, word, cex = title.size, col = colors[i])
-      }
-      else {
-        text(x1, y1, word, cex = title.size)
-      }
-    }
-    else {
-      text(x1, y1, word, cex = title.size, col = title.colors[i])
-    }
-    boxes[[length(boxes) + 1]] <- c(x1 - 0.5 * wid, y1 - 
-                                      0.5 * ht, wid, ht)
-  }
+  rr <- c(TRUE, FALSE, FALSE, TRUE, TRUE, FALSE, FALSE, TRUE)
   for (i in 1:length(words)) {
     rotWord <- runif(1) < rot.per
     r <- 0
@@ -264,8 +241,27 @@ authornames = sapply(strsplit(authornames, " "), function(x) paste0(substring(he
 rownames(authors) <- authornames
 authors <- authors[-which(authornames == "F. Leisch"),]  
 colnames(authors) <- NULL
-wordcloud::comparison.cloud(authors ,max.words=Inf,random.order=FALSE,c(2,0.2), title.size=0.6, use.r.layout = TRUE)
+wordcloud::comparison.cloud(authors ,max.words=Inf,random.order=FALSE,c(2.3,0.23), use.r.layout = TRUE)
+legend("bottomright", legend=names(dataset_s), cex=0.5, text.col = brewer.pal(8, "Dark2"))
 
 
-authors[authors >3 & authors < 7]   <- 4
-authors[authors >6]   <- 5
+library(tidyverse)
+
+Abstracts %>%
+  mutate(num_of_coauthors = rowSums(Abstracts[,c(7:278)]) - 1, Clusters = factor(names(dataset_s)[SC_abstract_8@cluster], levels = names(dataset_s)) ) %>%
+  ggplot() + geom_boxplot(aes(group = Clusters, y = num_of_coauthors, fill = Clusters)) + ylab("Number of coauthors")
+  
+num_of_coauthors = rowSums(Abstracts[,c(7:278)]) - 1
+
+set.seed(1)
+SCNN_abstract_8b <- flexmix(OAI ~ 1 + num_of_coauthors, k = 8, model = circlus::SCauchyNN_clust(LR = 0.02, max_iter = 300),
+                              control = list(verbose = 1))
+saveRDS(SCNN_abstract_8b, "SCNN_abstract_8b.RDS")
+table(SCNN_abstract_8b@cluster, SC_abstract_8@cluster)
+
+
+Abstracts %>%
+  mutate(num_of_coauthors = rowSums(Abstracts[,c(7:278)]) - 1, Clusters = factor(SCNN_abstract_8b@cluster) ) %>%
+  ggplot() + geom_boxplot(aes(group = Clusters, y = num_of_coauthors, fill = Clusters)) + ylab("Number of coauthors")
+
+
