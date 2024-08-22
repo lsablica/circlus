@@ -139,8 +139,8 @@ SCauchyNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.5, max_iter = 200
       with_no_grad({ 
         para_new <- NNmodel(X)
       })
-      para_new$mu <- torch::as_array(para$mu)
-      para_new$rho <- torch::as_array(para$rho)
+      para_new$mu <- torch::as_array(para_new$mu)
+      para_new$rho <- torch::as_array(para_new$rho)
       para_new
     }
     new ("FLXcomponent" , parameters = list(mu = torch::as_array(para$mu) , rho = torch::as_array(para$rho), model = NNmodel),
@@ -219,14 +219,16 @@ SCauchyNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_ite
       #(mu = para$mu , rho = para$rho, Y)
     }
     predict <- function ( x ) {
+      #print(x)
       X = torch_tensor(x)
       NNmodel$eval()
       with_no_grad({ 
         para_new <- NNmodel(X)
       })
-      para_new$mu <- torch::as_array(para$mu)
-      para_new$rho <- torch::as_array(para$rho)
-      para_new
+      para_new$mu <- torch::as_array(para_new$mu)
+      para_new$rho <- torch::as_array(para_new$rho)
+      #print(para_new)
+      return(para_new)
     }
     new ("FLXcomponent" , parameters = list(mu = torch::as_array(para$mu) , rho = torch::as_array(para$rho), model = NNmodel),
          df = para$df , logLik = logLik , predict = predict)
@@ -248,7 +250,7 @@ SCauchyNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_ite
     
     
     if(iteration <= free_iter){
-      print("adam")
+      #print("adam")
       NNmodel = Spherical(input_dim, output_dim)
       optimizer = optim_adam(NNmodel$parameters, lr = LR)
       NNmodel$train()
@@ -261,7 +263,7 @@ SCauchyNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_ite
       }
       para <- res  
     } else{
-      print("lbfgs")
+      #print("lbfgs")
       NNmodel = component$model
       optimizer = optim_lbfgs(NNmodel$parameters, lr = LR, max_iter = max_iter, line_search_fn = line_search_fn)
       NNmodel$train()
@@ -343,8 +345,8 @@ PKBDNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.1, max_iter = 200, l
       with_no_grad({ 
         para_new <- NNmodel(X)
       })
-      para_new$mu <- torch::as_array(para$mu)
-      para_new$rho <- torch::as_array(para$rho)
+      para_new$mu <- torch::as_array(para_new$mu)
+      para_new$rho <- torch::as_array(para_new$rho)
       para_new
     }
     new ("FLXcomponent" , parameters = list(mu = torch::as_array(para$mu) , rho = torch::as_array(para$rho), model = NNmodel),
@@ -431,8 +433,8 @@ PKBDNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter =
       with_no_grad({ 
         para_new <- NNmodel(X)
       })
-      para_new$mu <- torch::as_array(para$mu)
-      para_new$rho <- torch::as_array(para$rho)
+      para_new$mu <- torch::as_array(para_new$mu)
+      para_new$rho <- torch::as_array(para_new$rho)
       para_new
     }
     new ("FLXcomponent" , parameters = list(mu = torch::as_array(para$mu) , rho = torch::as_array(para$rho), model = NNmodel),
@@ -455,7 +457,7 @@ PKBDNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter =
     
     
     if(iteration <= free_iter){
-      print("adam")
+      #print("adam")
       NNmodel = Spherical(input_dim, output_dim)
       optimizer = optim_adam(NNmodel$parameters, lr = LR)
       NNmodel$train()
@@ -468,7 +470,7 @@ PKBDNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter =
       }
       para <- res  
     } else{
-      print("lbfgs")
+      #print("lbfgs")
       NNmodel = component$model
       optimizer = optim_lbfgs(NNmodel$parameters, lr = LR, max_iter = max_iter, line_search_fn = line_search_fn)
       NNmodel$train()

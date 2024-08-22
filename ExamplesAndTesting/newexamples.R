@@ -67,6 +67,7 @@ sapply(SC_abstract_8@components, function(x) x[[1]]@parameters$rho)
 
 
 set.seed(1)
+torch::torch_manual_seed(1)
 SCNN_abstract_8 <- flexmix(OAI256 ~ 1, k = 8, model = circlus::SCauchyNN_clust(LR= 0.02, free_iter = 5),
                              control = list(verbose = 1))
 #1 Genetic Influences on Psychiatric and Behavioral Disorders
@@ -254,7 +255,8 @@ Abstracts %>%
 num_of_coauthors = rowSums(Abstracts[,c(7:278)]) - 1
 
 set.seed(1)
-SCNN_abstract_8b <- flexmix(OAI ~ 1 + num_of_coauthors, k = 8, model = circlus::SCauchyNN_clust(LR = 0.02, max_iter = 300),
+torch::torch_manual_seed(1)
+SCNN_abstract_8b <- flexmix(OAI256 ~ 1 + num_of_coauthors, k = 8, model = circlus::SCauchyNN_clust_adam(EPOCHS = 200 ,LR = 0.02, free_iter = 10),
                               control = list(verbose = 1))
 saveRDS(SCNN_abstract_8b, "SCNN_abstract_8b.RDS")
 table(SCNN_abstract_8b@cluster, SC_abstract_8@cluster)
@@ -264,4 +266,25 @@ Abstracts %>%
   mutate(num_of_coauthors = rowSums(Abstracts[,c(7:278)]) - 1, Clusters = factor(SCNN_abstract_8b@cluster) ) %>%
   ggplot() + geom_boxplot(aes(group = Clusters, y = num_of_coauthors, fill = Clusters)) + ylab("Number of coauthors")
 
+
+
+
+dataset_labels <- SCNN_abstract_8b@cluster
+dataset_s <- sapply(1:6 ,function(label) list( Abstracts[dataset_labels %in% label,1] ) )
+names(dataset_s) <- 1:6
+dataset_corpus <- lapply(dataset_s, function(x) VCorpus(VectorSource( toString(x) )))
+dataset_corpus_all <- dataset_corpus[[1]]
+for (i in 2:6) { dataset_corpus_all <- c(dataset_corpus_all,dataset_corpus[[i]]) }
+dataset_corpus_all <- tm_map(dataset_corpus_all, removePunctuation)
+dataset_corpus_all <- tm_map(dataset_corpus_all, removeNumbers)
+dataset_corpus_all <- tm_map(dataset_corpus_all, function(x) removeWords(x,stopwords("english")))
+words_to_remove <- c("said","from","what","told","over","more","other","have","last","with","this","that","such","when","been","says","will","also","where","why","would","today")
+dataset_corpus_all <- tm_map(dataset_corpus_all, removeWords, words_to_remove)
+document_tm <- TermDocumentMatrix(dataset_corpus_all)
+document_tm_mat <- as.matrix(document_tm)
+colnames(document_tm_mat) <- names(dataset_s)
+index <- as.logical(sapply(rownames(document_tm_mat), function(x) (nchar(x)>3) ))
+document_tm_clean_mat_s <- document_tm_mat[index,]
+comparison.cloud(document_tm_clean_mat_s,max.words=200,random.order=FALSE,c(2,0.2), title.size=0.6, use.r.layout = TRUE)
+document_tm_clean_mat_s[apply(document_tm_clean_mat_s>30,1, any)==1, ]
 
