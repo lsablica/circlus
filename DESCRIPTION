@@ -13,11 +13,7 @@ Authors@R: c(
            comment = c(ORCID = "0000-0002-9076-4893"))
   )
 Maintainer: Lukas Sablica <lsablica@wu.ac.at>
-Description: Estimation scheme offers objects for flexmix package together with the necessary M-steps 
-             for both of the distributions.
-             The random sampling scheme of the package offers two random number generators for the
-             Poisson Kernel-Based Distribution (PKBD) and one generator for spherical Cauchy 
-             distribution on the sphere.
+Description: Estimation scheme offers objects for flexmix package together with the necessary M-steps for both of the distributions. The random sampling scheme of the package offers two random number generators for the Poisson Kernel-Based Distribution (PKBD) and one generator for spherical Cauchy distribution on the sphere.
 License: GPL-3
 Encoding: UTF-8
 Imports: Rcpp (>= 0.12.18), Tinflex (>= 1.8), flexmix, torch, methods
