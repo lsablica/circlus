@@ -6,7 +6,8 @@ m1 <- flexmix(mix ~ 1, k = 2, model = circlus::PKBDNN_clust())
 m1
 
 #df = readRDS("~/Documents/GitHub/PKBD---code/ExamplesAndTesting/df_final.RDS")
-load("~/Documents/GitHub/PKBD---code/data/Abstracts.rda")
+#load("~/Documents/GitHub/PKBD---code/data/Abstracts.rda")
+data("Abstracts")
 #df = data.frame(df)
 head(Abstracts)
 names(Abstracts)[c(279,280,281,282)]
@@ -85,37 +86,10 @@ library(wordcloud)
 library(reshape)
 library(tm)
 
-dataset_labels <- SC_abstract_8@cluster
-dataset_s <- sapply(1:8 ,function(label) list( Abstracts[dataset_labels %in% label,1] ) )
-names(dataset_s) <- c("Genetic Influences on Psychiatric and Behavioral Disorders",
-                      "Advancements in Model Validation and Benchmarking Techniques",
-                      "Travel Behavior and Environmental Impact in Transportation and Tourism",
-                      "Environmental and Biological Effects of Agrochemicals",
-                      "Market Segmentation Techniques and Applications",
-                      "Biopharmaceutical Production Through Data-Driven Approaches",
-                      "Finite Mixture Models and Their Applications",
-                      "Clustering Techniques in Data Analysis")
-
-dataset_corpus <- lapply(dataset_s, function(x) VCorpus(VectorSource( toString(x) )))
-dataset_corpus_all <- dataset_corpus[[1]]
-for (i in 2:8) { dataset_corpus_all <- c(dataset_corpus_all,dataset_corpus[[i]]) }
-dataset_corpus_all <- tm_map(dataset_corpus_all, removePunctuation)
-dataset_corpus_all <- tm_map(dataset_corpus_all, removeNumbers)
-dataset_corpus_all <- tm_map(dataset_corpus_all, function(x) removeWords(x,stopwords("english")))
-words_to_remove <- c("said","from","what","told","over","more","other","have","last","with","this","that","such","when","been","says","will","also","where","why","would","today")
-dataset_corpus_all <- tm_map(dataset_corpus_all, removeWords, words_to_remove)
-document_tm <- TermDocumentMatrix(dataset_corpus_all)
-document_tm_mat <- as.matrix(document_tm)
-colnames(document_tm_mat) <- names(dataset_s)
-index <- as.logical(sapply(rownames(document_tm_mat), function(x) (nchar(x)>3) ))
-document_tm_clean_mat_s <- document_tm_mat[index,]
-comparison.cloud(document_tm_clean_mat_s,max.words=400,random.order=FALSE,c(4,0.5), title.size=0.6, use.r.layout = TRUE)
-legend("bottomright", legend=names(dataset_s), cex=0.5, text.col = brewer.pal(8, "Dark2"))
-
 comparison.cloud <- function (term.matrix, scale = c(4, 0.5), max.words = 300, random.order = FALSE, 
-          rot.per = 0.1, colors = brewer.pal(max(3, ncol(term.matrix)), 
-                                             "Dark2"), use.r.layout = FALSE, title.size = 3, title.colors = NULL, 
-          match.colors = FALSE, title.bg.colors = "grey90", ...) {
+                              rot.per = 0.1, colors = brewer.pal(max(3, ncol(term.matrix)), 
+                                                                 "Dark2"), use.r.layout = FALSE, title.size = 3, title.colors = NULL, 
+                              match.colors = FALSE, title.bg.colors = "grey90", ...) {
   ndoc <- ncol(term.matrix)
   thetaBins <- seq(from = 0, to = 2 * pi, length = ndoc + 1)
   for (i in 1:ndoc) {
@@ -232,6 +206,35 @@ comparison.cloud <- function (term.matrix, scale = c(4, 0.5), max.words = 300, r
   invisible()
 }
 
+dataset_labels <- SC_abstract_8@cluster
+dataset_s <- sapply(1:8 ,function(label) list( Abstracts[dataset_labels %in% label,1] ) )
+names(dataset_s) <- c("Genetic Influences on Psychiatric and Behavioral Disorders",
+                      "Advancements in Model Validation and Benchmarking Techniques",
+                      "Travel Behavior and Environmental Impact in Transportation and Tourism",
+                      "Environmental and Biological Effects of Agrochemicals",
+                      "Market Segmentation Techniques and Applications",
+                      "Biopharmaceutical Production Through Data-Driven Approaches",
+                      "Finite Mixture Models and Their Applications",
+                      "Clustering Techniques in Data Analysis")
+
+dataset_corpus <- lapply(dataset_s, function(x) VCorpus(VectorSource( toString(x) )))
+dataset_corpus_all <- dataset_corpus[[1]]
+for (i in 2:8) { dataset_corpus_all <- c(dataset_corpus_all,dataset_corpus[[i]]) }
+dataset_corpus_all <- tm_map(dataset_corpus_all, removePunctuation)
+dataset_corpus_all <- tm_map(dataset_corpus_all, removeNumbers)
+dataset_corpus_all <- tm_map(dataset_corpus_all, function(x) removeWords(x,stopwords("english")))
+words_to_remove <- c("said","from","what","told","over","more","other","have","last","with","this","that","such","when","been","says","will","also","where","why","would","today")
+dataset_corpus_all <- tm_map(dataset_corpus_all, removeWords, words_to_remove)
+document_tm <- TermDocumentMatrix(dataset_corpus_all)
+document_tm_mat <- as.matrix(document_tm)
+colnames(document_tm_mat) <- names(dataset_s)
+index <- as.logical(sapply(rownames(document_tm_mat), function(x) (nchar(x)>3) ))
+document_tm_clean_mat_s <- document_tm_mat[index,]
+comparison.cloud(document_tm_clean_mat_s,max.words=400,random.order=FALSE,c(4,0.5), title.size=0.6, use.r.layout = TRUE)
+legend("bottomright", legend=names(dataset_s), cex=0.5, text.col = brewer.pal(8, "Dark2"))
+
+
+
 #####
 
 
@@ -250,7 +253,7 @@ library(tidyverse)
 
 Abstracts %>%
   mutate(num_of_coauthors = rowSums(Abstracts[,c(7:278)]) - 1, Clusters = factor(names(dataset_s)[SC_abstract_8@cluster], levels = names(dataset_s)) ) %>%
-  ggplot() + geom_boxplot(aes(group = Clusters, y = num_of_coauthors, fill = Clusters)) + ylab("Number of coauthors")
+  ggplot() + geom_boxplot(aes(group = Clusters, y = num_of_coauthors, fill = Clusters)) + ylab("Number of co-authors")
   
 num_of_coauthors = rowSums(Abstracts[,c(7:278)]) - 1
 
@@ -258,7 +261,7 @@ set.seed(1)
 torch::torch_manual_seed(1)
 SCNN_abstract_8b <- flexmix(OAI256 ~ 1 + num_of_coauthors, k = 8, model = circlus::SCauchyNN_clust_adam(EPOCHS = 200 ,LR = 0.02, free_iter = 10),
                               control = list(verbose = 1))
-saveRDS(SCNN_abstract_8b, "SCNN_abstract_8b.RDS")
+#saveRDS(SCNN_abstract_8b, "SCNN_abstract_8b.RDS")
 table(SCNN_abstract_8b@cluster, SC_abstract_8@cluster)
 
 
@@ -286,5 +289,48 @@ colnames(document_tm_mat) <- names(dataset_s)
 index <- as.logical(sapply(rownames(document_tm_mat), function(x) (nchar(x)>3) ))
 document_tm_clean_mat_s <- document_tm_mat[index,]
 comparison.cloud(document_tm_clean_mat_s,max.words=200,random.order=FALSE,c(2,0.2), title.size=0.6, use.r.layout = TRUE)
+
 document_tm_clean_mat_s[apply(document_tm_clean_mat_s>30,1, any)==1, ]
 
+
+
+p = predict(SCNN_abstract_8b, newdata = data.frame(num_of_coauthors = num_of_coauthors[sample(129,129)]))
+
+W = round(SCNN_abstract_8b@posterior$scaled)
+
+
+
+
+howsitlooking <- function(model){
+  p = predict(SCNN_abstract_8b)
+  W = round(SCNN_abstract_8b@posterior$scaled)
+  ll <- function(i){
+    x = p[[i]]
+    w = W[,i]
+    w = w/sum(w)
+    mu = x[,1]$mu
+    rho = x[,1]$rho
+    d = dim(mu)[2]
+    sum(w* ((d-1)*log(1 + rho^2 - 2*rho*diag(tcrossprod(mu, OAI256)) ) -(d-1)*log(1-rho^2))  ) 
+  }
+  true <- sapply(seq_len(model@k), ll)
+  
+  simmed <- matrix(0, nrow = 10000, ncol = model@k)
+  for(i in 1:10000){
+    p <- predict(SCNN_abstract_8b, newdata = data.frame(num_of_coauthors = num_of_coauthors[sample(129,129)]))
+    simmed[i,] <- sapply(seq_len(model@k), ll)
+  }
+  op <- par(mfrow = c(2,3))
+  for(i in seq_len(model@k)){
+    d <- density(simmed[,i])
+    plot(d)
+    pv = sum(simmed[,i] < true[i])/10000
+    text(x = max(d$x) , y = max(d$y)*0.9, pv, pos = 2)
+    abline(v = true[i], col = 2)
+  }
+  par(op)
+}
+
+SCNN_abstract_4b <- flexmix(OAI256 ~ 1 + num_of_coauthors, k = 4, model = circlus::SCauchyNN_clust_adam(EPOCHS = 200 ,LR = 0.02, free_iter = 10),
+                            control = list(verbose = 1))
+table(SCNN_abstract_4b@cluster, SC_abstract_8@cluster)
