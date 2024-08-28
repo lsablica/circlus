@@ -302,8 +302,8 @@ W = round(SCNN_abstract_8b@posterior$scaled)
 
 
 howsitlooking <- function(model){
-  p = predict(SCNN_abstract_8b)
-  W = round(SCNN_abstract_8b@posterior$scaled)
+  p = predict(model)
+  W = round(model@posterior$scaled)
   ll <- function(i){
     x = p[[i]]
     w = W[,i]
@@ -317,7 +317,7 @@ howsitlooking <- function(model){
   
   simmed <- matrix(0, nrow = 10000, ncol = model@k)
   for(i in 1:10000){
-    p <- predict(SCNN_abstract_8b, newdata = data.frame(num_of_coauthors = num_of_coauthors[sample(129,129)]))
+    p <- predict(model, newdata = data.frame(num_of_coauthors = num_of_coauthors[sample(129,129)]))
     simmed[i,] <- sapply(seq_len(model@k), ll)
   }
   op <- par(mfrow = c(2,3))
