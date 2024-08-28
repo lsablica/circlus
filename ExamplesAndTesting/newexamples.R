@@ -334,3 +334,4 @@ howsitlooking <- function(model){
 SCNN_abstract_4b <- flexmix(OAI256 ~ 1 + num_of_coauthors, k = 4, model = circlus::SCauchyNN_clust_adam(EPOCHS = 200 ,LR = 0.02, free_iter = 10),
                             control = list(verbose = 1))
 table(SCNN_abstract_4b@cluster, SC_abstract_8@cluster)
+
