@@ -19,11 +19,18 @@ logLik_PKBD <- function(data, mu_vec, rho) {
 #' @rdname rPKBD_ACG
 #' @useDynLib circlus
 #' @importFrom Rcpp evalCpp
-#' @export
 rPKBD_ACG <- function(n, rho, mu) {
     .Call('_circlus_rPKBD_ACG', PACKAGE = 'circlus', n, rho, mu)
 }
 
+#' @title Random Sampling from spherical Cauchy Distributions
+#' @description \code{rsCauchy} generates a random sample from a mixture of multivariate Watson distributions.
+#' @param n an integer giving the number of samples to draw.
+#' @param rho a numeric value giving the rho parameters.
+#' @param mu a numeric vector giving the mu direction parameter.
+#' @return  A matrix with rows equal to the generated values.
+#' @rdname rsCauchy
+#' @export
 rsCauchy <- function(n, rho, mu) {
     .Call('_circlus_rsCauchy', PACKAGE = 'circlus', n, rho, mu)
 }

@@ -14,7 +14,6 @@ using namespace Rcpp;
 //' @rdname rPKBD_ACG
 //' @useDynLib circlus
 //' @importFrom Rcpp evalCpp
-//' @export
 // [[Rcpp::export]]
 arma::mat rPKBD_ACG(int n, double rho, arma::vec &mu){
   double lambda = 2*rho/(1+rho*rho);

@@ -19,7 +19,6 @@ PKBD_generatorC <- function(lambda = 0.95, d = 5){
 #' @details The function generates samples from PKBD using projected Saw distribution.
 #' @rdname rPKBD_Saw
 #' @import Tinflex
-#' @export
 #' @importFrom stats rnorm
 rPKBD_Saw <-function(n, rho, mu){
   lambda <- 2*rho/(1+rho*rho)
@@ -39,4 +38,25 @@ rPKBD_Saw <-function(n, rho, mu){
     y <- tcrossprod(w,mu) + sqrt(1 - w^2) * v
   }
   y
+}
+
+#' @title Random Sampling from PKBD Distributions using ACG and projected Saw distribution
+#' @description  \code{rPKBD} generates a random sample from PKBD distributions. 
+#' @param n number of random draws.
+#' @param rho a numeric giving the concentration parameter.
+#' @param mu a numeric vector giving the mean direction parameter.
+#' @param method method to use, "ACG" for angular central Gaussian distribution envelopes and "Saw" for the use of projected Saw distribution  
+#' @return  A vector the generated values.
+#' @details The function generates samples from PKBD using ACG and projected Saw distribution.
+#' @rdname rPKBD
+#' @import Tinflex
+#' @export
+rPKBD <- function(n, rho, mu, method = "ACG"){
+  if(method == "ACG"){
+    return(rPKBD_ACG(n, rho, mu)) 
+  }else if(method == "Saw"){
+    return(rPKBD_Saw(n, rho, mu))
+  }else{
+    stop("No such mathod is available.")
+  }
 }
