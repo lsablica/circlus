@@ -196,13 +196,14 @@ SCauchyNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.5, max_iter = 200
 #' @param EPOCHS number of epochs in the M-step estimation (default: 1)
 #' @param LR learning rate used in the M-steo estimation (default: 0.5)
 #' @param max_iter maximum number of iterations of the LBFGS optimizer (default: 200)
+#' @param adam_iter number of iteration for which the adam optimizer is used before the algorithm switches to L-BFGS (default: 5)
+#' @param free_iter number of initial iterations for which the model in M-step is fully reseted (default: adam_iter)
 #' @param line_search_fn method used for line search in LBFGS (default: "strong_wolfe")
-#' @param free_iter number of initial iterations for which the model in M-step is fully reseted (default: 3)
 #' @return Object of type FLXMC for flexmix estimation.
 #' @rdname SCauchyNN_clust_adam
 #' @export
 SCauchyNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200, 
-                              line_search_fn = "strong_wolfe", free_iter = 5){
+                                 adam_iter = 5, free_iter = adam_iter, line_search_fn = "strong_wolfe"){
   retval <- new ("FLXMC" , weighted = TRUE , formula = formula , dist = " PKBD " ,
                  name = " Spherical Cauchy - based clustering using neural networks")
   retval@defineComponent <- function (para, df) {
@@ -249,9 +250,12 @@ SCauchyNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_ite
     W = torch_tensor(matrix(w/sum(w), ncol = 1))
     
     
-    if(iteration <= free_iter){
+    if(iteration <= adam_iter){
       #print("adam")
-      NNmodel = Spherical(input_dim, output_dim)
+      if(iteration <= free_iter){
+        component$model = Spherical(input_dim, output_dim)
+      } 
+      NNmodel = component$model
       optimizer = optim_adam(NNmodel$parameters, lr = LR)
       NNmodel$train()
       for(epoch in seq_len(EPOCHS)){
@@ -264,6 +268,9 @@ SCauchyNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_ite
       para <- res  
     } else{
       #print("lbfgs")
+      if(iteration <= free_iter){
+        component$model = Spherical(input_dim, output_dim)
+      } 
       NNmodel = component$model
       optimizer = optim_lbfgs(NNmodel$parameters, lr = LR, max_iter = max_iter, line_search_fn = line_search_fn)
       NNmodel$train()
@@ -405,13 +412,14 @@ PKBDNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.1, max_iter = 200, l
 #' @param EPOCHS number of epochs in the M-step estimation (default: 100)
 #' @param LR learning rate used in the M-steo estimation (default: 0.1)
 #' @param max_iter maximum number of iterations of the LBFGS optimizer (default: 200)
+#' @param adam_iter number of iteration for which the adam optimizer is used before the algorithm switches to L-BFGS (default: 5)
+#' @param free_iter number of initial iterations for which the model in M-step is fully reseted (default: adam_iter)
 #' @param line_search_fn method used for line search in LBFGS (default: "strong_wolfe")
-#' @param free_iter number of initial iterations for which the model in M-step is fully reseted (default: 5)
 #' @return Object of type FLXMC for flexmix estimation.
 #' @rdname PKBDNN_clust_adam
 #' @export
 PKBDNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200, 
-                              line_search_fn = "strong_wolfe", free_iter = 5){
+                              adam_iter = 5, free_iter = adam_iter, line_search_fn = "strong_wolfe"){
   retval <- new ("FLXMC" , weighted = TRUE , formula = formula , dist = " PKBD " ,
                  name = " PKBD - based clustering using neural networks")
   retval@defineComponent <- function (para, df) {
@@ -456,9 +464,12 @@ PKBDNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter =
     W = torch_tensor(matrix(w/sum(w), ncol = 1))
     
     
-    if(iteration <= free_iter){
+    if(iteration <= adam_iter){
       #print("adam")
-      NNmodel = Spherical(input_dim, output_dim)
+      if(iteration <= free_iter){
+        component$model = Spherical(input_dim, output_dim)
+      } 
+      NNmodel = component$model
       optimizer = optim_adam(NNmodel$parameters, lr = LR)
       NNmodel$train()
       for(epoch in seq_len(EPOCHS)){
@@ -471,6 +482,9 @@ PKBDNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter =
       para <- res  
     } else{
       #print("lbfgs")
+      if(iteration <= free_iter){
+        component$model = Spherical(input_dim, output_dim)
+      } 
       NNmodel = component$model
       optimizer = optim_lbfgs(NNmodel$parameters, lr = LR, max_iter = max_iter, line_search_fn = line_search_fn)
       NNmodel$train()

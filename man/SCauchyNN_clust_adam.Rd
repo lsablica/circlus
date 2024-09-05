@@ -9,8 +9,9 @@ SCauchyNN_clust_adam(
   EPOCHS = 100,
   LR = 0.1,
   max_iter = 200,
-  line_search_fn = "strong_wolfe",
-  free_iter = 5
+  adam_iter = 5,
+  free_iter = adam_iter,
+  line_search_fn = "strong_wolfe"
 )
 }
 \arguments{
@@ -22,9 +23,11 @@ SCauchyNN_clust_adam(
 
 \item{max_iter}{maximum number of iterations of the LBFGS optimizer (default: 200)}
 
-\item{line_search_fn}{method used for line search in LBFGS (default: "strong_wolfe")}
+\item{adam_iter}{number of iteration for which the adam optimizer is used before the algorithm switches to L-BFGS (default: 5)}
 
-\item{free_iter}{number of initial iterations for which the model in M-step is fully reseted (default: 3)}
+\item{free_iter}{number of initial iterations for which the model in M-step is fully reseted (default: adam_iter)}
+
+\item{line_search_fn}{method used for line search in LBFGS (default: "strong_wolfe")}
 }
 \value{
 Object of type FLXMC for flexmix estimation.
