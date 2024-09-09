@@ -24,3 +24,6 @@ A vector the generated values.
 \details{
 The function generates samples from PKBD using ACG and projected Saw distribution.
 }
+\examples{
+rPKBD(10, 0.95, c(1,0,0))
+}

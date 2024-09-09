@@ -50,6 +50,8 @@ rPKBD_Saw <-function(n, rho, mu){
 #' @details The function generates samples from PKBD using ACG and projected Saw distribution.
 #' @rdname rPKBD
 #' @import Tinflex
+#' @examples
+#' rPKBD(10, 0.95, c(1,0,0))
 #' @export
 rPKBD <- function(n, rho, mu, method = "ACG"){
   if(method == "ACG"){

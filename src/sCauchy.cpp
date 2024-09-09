@@ -80,6 +80,8 @@ arma::mat Moebius_S(arma::mat X, arma::vec mu, double rho){
 //' @param mu a numeric vector giving the mu direction parameter.
 //' @return  A matrix with rows equal to the generated values.
 //' @rdname rsCauchy
+//' @examples
+//' rsCauchy(10, 0.95, c(1,0,0))
 //' @export
 // [[Rcpp::export]]
 arma::mat rsCauchy(int n, double rho, arma::vec &mu){

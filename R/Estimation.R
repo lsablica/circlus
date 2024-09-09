@@ -5,6 +5,11 @@
 #' @rdname SCauchy_clust
 #' @import flexmix
 #' @importFrom methods new
+#' @examples
+#' \dontrun{
+#' mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
+#' m1 <- flexmix(mix ~ 1, k = 2, model = SCauchy_clust())
+#' }
 #' @export
 SCauchy_clust <- function (formula = .~.){
   retval <- new ("FLXMC", weighted = TRUE ,
@@ -40,6 +45,11 @@ SCauchy_clust <- function (formula = .~.){
 #' @import flexmix
 #' @importFrom methods new
 #' @importFrom stats runif
+#' @examples
+#' \dontrun{
+#' mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
+#' m1 <- flexmix(mix ~ 1, k = 2, model = PKBD_clust())
+#' }
 #' @export
 PKBD_clust <- function (formula = .~.){
   retval <- new ("FLXMC" , weighted = TRUE ,
@@ -116,7 +126,6 @@ scauchy_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
 #' @import flexmix
 #' @import torch
 #' @importFrom methods new
-#' @export
 SCauchyNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.5, max_iter = 200, line_search_fn = "strong_wolfe", free_iter = 5){
   retval <- new ("FLXMC" , weighted = TRUE , formula = formula , dist = " SCauchy " ,
                  name = " Spherical Cauchy - based clustering using neural networks")
@@ -200,6 +209,11 @@ SCauchyNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.5, max_iter = 200
 #' @param free_iter number of initial iterations for which the model in M-step is fully reseted (default: adam_iter)
 #' @param line_search_fn method used for line search in LBFGS (default: "strong_wolfe")
 #' @return Object of type FLXMC for flexmix estimation.
+#' @examples
+#' \dontrun{
+#' mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
+#' m1 <- flexmix(mix ~ 1, k = 2, model = SCauchyNN_clust_adam())
+#' }
 #' @rdname SCauchyNN_clust_adam
 #' @export
 SCauchyNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200, 
@@ -329,7 +343,6 @@ pkbd_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
 #' @import flexmix
 #' @import torch
 #' @importFrom methods new
-#' @export
 PKBDNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.1, max_iter = 200, line_search_fn = "strong_wolfe", free_iter = 3){
   retval <- new ("FLXMC" , weighted = TRUE , formula = formula , dist = " PKBD " ,
                  name = " PKBD - based clustering using neural networks")
@@ -416,6 +429,11 @@ PKBDNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.1, max_iter = 200, l
 #' @param free_iter number of initial iterations for which the model in M-step is fully reseted (default: adam_iter)
 #' @param line_search_fn method used for line search in LBFGS (default: "strong_wolfe")
 #' @return Object of type FLXMC for flexmix estimation.
+#' @examples
+#' \dontrun{
+#' mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
+#' m1 <- flexmix(mix ~ 1, k = 2, model = PKBDNN_clust_adam())
+#' }
 #' @rdname PKBDNN_clust_adam
 #' @export
 PKBDNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200, 

@@ -1,8 +1,8 @@
 library(flexmix)
 library(circlus)
 
-mix <- rbind(rPKBD_ACG(300, 0.95, c(1,0,0)), rPKBD_ACG(300, 0.9, c(-1,0,0)))
-m1 <- flexmix(mix ~ 1, k = 2, model = circlus::PKBDNN_clust())
+mix <- rbind(rPKBD(300, 0.95, c(1,0,0)), rPKBD(300, 0.9, c(-1,0,0)))
+m1 <- flexmix(mix ~ 1, k = 2, model = circlus::PKBD_clust())
 m1
 
 #df = readRDS("~/Documents/GitHub/PKBD---code/ExamplesAndTesting/df_final.RDS")
@@ -10,14 +10,13 @@ m1
 data("Abstracts")
 #df = data.frame(df)
 head(Abstracts)
-names(Abstracts)[c(279,280,281,282)]
+names(Abstracts)[c(280,281,282,283)]
 
 
-GTE <-  t(sapply(Abstracts[,279], function(x) x))
-GTE <- GTE/sqrt(rowSums(GTE^2))
-OAI <-  t(sapply(Abstracts[,280], function(x) x))
-OAI512 <-  t(sapply(Abstracts[,281], function(x) x))
-OAI256 <-  t(sapply(Abstracts[,282], function(x) x))
+GTE <-  t(sapply(Abstracts[,280], function(x) x))
+OAI <-  t(sapply(Abstracts[,281], function(x) x))
+OAI512 <-  t(sapply(Abstracts[,282], function(x) x))
+OAI256 <-  t(sapply(Abstracts[,283], function(x) x))
 pages = matrix(Abstracts$pages, ncol = 1)
 
 PKBD_abstract_6 <- flexmix(OAI256 ~ 1, k = 6, model = circlus::PKBD_clust())
@@ -240,7 +239,7 @@ dev.off()
 
 
 
-authors <- t(aggregate(Abstracts[,c(7:278)], by = list(SC_abstract_8@cluster), sum)[,-1])
+authors <- t(aggregate(Abstracts[,c(8:279)], by = list(SC_abstract_8@cluster), sum)[,-1])
 authornames = gsub("\\.(?!\\.)", " ",  rownames(authors), perl = TRUE)
 authornames = sapply(strsplit(authornames, " "), function(x) paste0(substring(head(x, 1),1,1) , ". ", tail(x, 1)))
 rownames(authors) <- authornames
@@ -253,10 +252,10 @@ dev.off()
 library(tidyverse)
 
 Abstracts %>%
-  mutate(num_of_coauthors = rowSums(Abstracts[,c(7:278)]) - 1, Clusters = factor(names(dataset_s)[SC_abstract_8@cluster], levels = names(dataset_s)) ) %>%
+  mutate(num_of_coauthors = rowSums(Abstracts[,c(8:279)]) - 1, Clusters = factor(names(dataset_s)[SC_abstract_8@cluster], levels = names(dataset_s)) ) %>%
   ggplot() + geom_boxplot(aes(group = Clusters, y = num_of_coauthors, fill = Clusters)) + ylab("Number of co-authors")
   
-num_of_coauthors = rowSums(Abstracts[,c(7:278)]) - 1
+num_of_coauthors = rowSums(Abstracts[,c(8:279)]) - 1
 
 set.seed(1)
 torch::torch_manual_seed(1)
@@ -267,7 +266,7 @@ table(SCNN_abstract_8b@cluster, SC_abstract_8@cluster)
 
 
 Abstracts %>%
-  mutate(num_of_coauthors = rowSums(Abstracts[,c(7:278)]) - 1, Clusters = factor(SCNN_abstract_8b@cluster) ) %>%
+  mutate(num_of_coauthors = rowSums(Abstracts[,c(8:279)]) - 1, Clusters = factor(SCNN_abstract_8b@cluster) ) %>%
   ggplot() + geom_boxplot(aes(group = Clusters, y = num_of_coauthors, fill = Clusters)) + ylab("Number of coauthors")
 
 
@@ -336,3 +335,10 @@ SCNN_abstract_4b <- flexmix(OAI256 ~ 1 + num_of_coauthors, k = 4, model = circlu
                             control = list(verbose = 1))
 table(SCNN_abstract_4b@cluster, SC_abstract_8@cluster)
 
+
+Encoding(colnames(Abstracts))
+colnames(Abstracts) <- iconv(
+  colnames(Abstracts), 
+  "",
+  "UTF-8"
+)

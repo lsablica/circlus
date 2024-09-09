@@ -19,3 +19,6 @@ A matrix with rows equal to the generated values.
 \description{
 \code{rsCauchy} generates a random sample from a mixture of multivariate Watson distributions.
 }
+\examples{
+rsCauchy(10, 0.95, c(1,0,0))
+}

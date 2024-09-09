@@ -1,7 +1,7 @@
 library(flexmix)
 library(circlus)
 data("Abstracts")
-OAI256 <-  t(sapply(Abstracts[,282], function(x) x))
+OAI256 <-  t(sapply(Abstracts[,283], function(x) x))
 
 
 
@@ -12,7 +12,8 @@ set.seed(1)
 
 set.seed(1)
 torch::torch_manual_seed(1)
-(SCNN_abstract_8 <- flexmix(OAI256 ~ 1, k = 8, model = circlus::SCauchyNN_clust_adam(LR= 0.02, adam_iter = 0)))
+(SCNN_abstract_8 <- flexmix(OAI256 ~ 1, k = 8, model = circlus::SCauchyNN_clust_adam(LR= 0.02, adam_iter = 0,
+                                                                                     free_iter = 5)))
 
 
 
@@ -169,7 +170,7 @@ comparison.cloud(document_tm_clean_mat_s,max.words=400,random.order=FALSE,c(4,0.
 legend("bottomright", legend=names(dataset_s), cex=0.5, text.col = brewer.pal(8, "Dark2"))
 
 
-authors <- t(aggregate(Abstracts[,c(7:278)], by = list(SC_abstract_8@cluster), sum)[,-1])
+authors <- t(aggregate(Abstracts[,c(8:279)], by = list(SC_abstract_8@cluster), sum)[,-1])
 authornames = gsub("\\.(?!\\.)", " ",  rownames(authors), perl = TRUE)
 authornames = sapply(strsplit(authornames, " "), function(x) paste0(substring(head(x, 1),1,1) , ". ", tail(x, 1)))
 rownames(authors) <- authornames
@@ -182,15 +183,12 @@ legend("bottomright", legend=names(dataset_s), cex=0.5, text.col = brewer.pal(8,
 
 library(tidyverse)
 Abstracts %>%
-  mutate(num_of_coauthors = rowSums(Abstracts[,c(7:278)]) - 1, Clusters = factor(names(dataset_s)[SC_abstract_8@cluster], levels = names(dataset_s)) ) %>%
+  mutate(num_of_coauthors = rowSums(Abstracts[,c(8:279)]) - 1, Clusters = factor(names(dataset_s)[SC_abstract_8@cluster], levels = names(dataset_s)) ) %>%
   ggplot() + geom_boxplot(aes(group = Clusters, y = num_of_coauthors, fill = Clusters)) + ylab("Number of co-authors") +
   scale_fill_manual(values=brewer.pal(8, "Dark2"))
 
 
-num_of_coauthors = rowSums(Abstracts[,c(7:278)]) - 1
-
-
-
+num_of_coauthors = Abstracts$number_of_coauthors
 
 
 set.seed(1)
@@ -199,6 +197,6 @@ SCNN_abstract_8b <- flexmix(OAI256 ~ 1 + num_of_coauthors, k = 8, model = circlu
 table(SCNN_abstract_8b@cluster, SC_abstract_8@cluster)
 
 Abstracts %>%
-  mutate(num_of_coauthors = rowSums(Abstracts[,c(7:278)]) - 1, Clusters = factor(SCNN_abstract_8b@cluster) ) %>%
+  mutate(num_of_coauthors = rowSums(Abstracts[,c(8:279)]) - 1, Clusters = factor(SCNN_abstract_8b@cluster) ) %>%
   ggplot() + geom_boxplot(aes(group = Clusters, y = num_of_coauthors, fill = Clusters)) + ylab("Number of coauthors") +
   scale_fill_manual(values=brewer.pal(8, "Dark2")) + theme(legend.position="none")

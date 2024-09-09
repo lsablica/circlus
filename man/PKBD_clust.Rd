@@ -15,3 +15,9 @@ Object of type FLXMC for flexmix estimation.
 \description{
 \code{PKBD_clust} offers a flexmix routine for PKBD distribution.
 }
+\examples{
+\dontrun{
+mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
+m1 <- flexmix(mix ~ 1, k = 2, model = PKBD_clust())
+}
+}
