@@ -230,9 +230,10 @@ document_tm_mat <- as.matrix(document_tm)
 colnames(document_tm_mat) <- names(dataset_s)
 index <- as.logical(sapply(rownames(document_tm_mat), function(x) (nchar(x)>3) ))
 document_tm_clean_mat_s <- document_tm_mat[index,]
+pdf(file = "WC1.pdf", width = 9.6, height = 4)
 comparison.cloud(document_tm_clean_mat_s,max.words=400,random.order=FALSE,c(4,0.5), title.size=0.6, use.r.layout = TRUE)
 legend("bottomright", legend=names(dataset_s), cex=0.5, text.col = brewer.pal(8, "Dark2"))
-
+dev.off()
 
 
 #####
@@ -245,9 +246,9 @@ authornames = sapply(strsplit(authornames, " "), function(x) paste0(substring(he
 rownames(authors) <- authornames
 authors <- authors[-which(authornames == "F. Leisch"),]  
 colnames(authors) <- NULL
+pdf(file = "WC2.pdf", width = 6.3, height = 2.7)
 wordcloud::comparison.cloud(authors ,max.words=Inf,random.order=FALSE,c(2.3,0.23), use.r.layout = TRUE)
-legend("bottomright", legend=names(dataset_s), cex=0.5, text.col = brewer.pal(8, "Dark2"))
-
+dev.off()
 
 library(tidyverse)
 
