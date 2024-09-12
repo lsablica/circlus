@@ -36,8 +36,6 @@ Object of type FLXMC for flexmix estimation.
 \code{PKBDNN_clust_adam} offers a flexmix routine for PKBD distribution using neural networks and adam optimizer.
 }
 \examples{
-\dontrun{
 mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
-m1 <- flexmix(mix ~ 1, k = 2, model = PKBDNN_clust_adam())
-}
+m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = PKBDNN_clust_adam())
 }

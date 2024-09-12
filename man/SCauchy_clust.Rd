@@ -16,8 +16,6 @@ Object of type FLXMC for flexmix estimation.
 \code{SCauchy_clust} offers a flexmix routine for spherical Cauchy distribution.
 }
 \examples{
-\dontrun{
 mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
-m1 <- flexmix(mix ~ 1, k = 2, model = SCauchy_clust())
-}
+m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = SCauchy_clust())
 }

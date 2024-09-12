@@ -125,6 +125,8 @@ scauchy_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
 #' mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
 #' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = SCauchyNN_clust_adam())
 #' @rdname SCauchyNN_clust_adam
+#' @import flexmix
+#' @import torch
 #' @export
 SCauchyNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200, 
                                  adam_iter = 5, free_iter = adam_iter, line_search_fn = "strong_wolfe"){
@@ -258,6 +260,8 @@ pkbd_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
 #' mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
 #' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = PKBDNN_clust_adam())
 #' @rdname PKBDNN_clust_adam
+#' @import flexmix
+#' @import torch
 #' @export
 PKBDNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200, 
                               adam_iter = 5, free_iter = adam_iter, line_search_fn = "strong_wolfe"){
