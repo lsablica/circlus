@@ -1,7 +1,7 @@
 library(flexmix)
 library(circlus)
 data("Abstracts")
-OAI256 <-  t(sapply(Abstracts[,283], function(x) x))
+OAI256 <- do.call(rbind, Abstracts[, "OpenAI_embeddings256"])
 
 
 
@@ -194,7 +194,7 @@ num_of_coauthors = Abstracts$number_of_coauthors
 set.seed(1)
 torch::torch_manual_seed(1)
 SCNN_abstract_8b <- flexmix(OAI256 ~ 1 + num_of_coauthors, k = 8, model = circlus::SCauchyNN_clust_adam(EPOCHS = 200 ,LR = 0.02, adam_iter = 10))
-table(SCNN_abstract_8b@cluster, SC_abstract_8@cluster)
+table(with_num_of_coauthors = SCNN_abstract_8b@cluster, without_num_of_coauthors = SC_abstract_8@cluster)
 
 Abstracts %>%
   mutate(num_of_coauthors = rowSums(Abstracts[,c(8:279)]) - 1, Clusters = factor(SCNN_abstract_8b@cluster) ) %>%
