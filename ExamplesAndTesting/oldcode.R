@@ -170,3 +170,111 @@ PKBDNN_clust <- function(formula = .~. , EPOCHS = 1, LR = 0.1, max_iter = 200, l
   }
   retval
 }
+
+
+
+#' Flexible Mixture Component for PKBD Clustering
+#'
+#' @description
+#' Provides a flexible mixture component for PKBD (Projected Kent-Based Distribution) clustering,
+#' offering different estimation methods for use with the flexmix package.
+#'
+#' @param formula An R formula object specifying the model. Default is `.~.`.
+#' @param method A character string specifying the estimation method. 
+#'        Options are "NN" for a neural network-based approach and "direct" for standard estimation.
+#' @param ... Additional arguments to fine-tune the clustering process.
+#'
+#' @return An object of class "FLXMC" for use in flexmix estimation.
+#'
+#' @details
+#' FLXMCpkbd offers two different PKBD clustering methods:
+#' \itemize{
+#'   \item "NN": A neural network-based approach, which may offer more flexibility for complex data structures.
+#'   \item "direct": A standard estimation method, typically faster and suitable for many common scenarios.
+#' }
+#' 
+#' The choice of method can significantly affect clustering results and computation time.
+#' Users are encouraged to experiment with both methods to determine which works best for their specific data and requirements.
+#'
+#' @examples
+#' \dontrun{
+#' library(flexmix)
+#' 
+#' # Using neural network method
+#' model_nn <- flexmix(~., data=your_data, k=2, model=FLXMCpkbd(method="NN"))
+#'
+#' # Using direct method
+#' model_direct <- flexmix(~., data=your_data, k=2, model=FLXMCpkbd(method="direct"))
+#'
+#' # Compare results
+#' summary(model_nn)
+#' summary(model_direct)
+#' }
+#'
+#' @seealso
+#' \code{\link[flexmix]{flexmix}} for the main clustering function in the flexmix package.
+#'
+#' @export
+FLXMCpkbd <- function(formula = .~. , method = "direct", ...){
+  if (method == "NN"){
+    return(PKBDNN_clust_adam(formula = formula, ...))
+  } else if (method == "direct"){
+    return(PKBD_clust(formula = formula, ...))
+  } else {
+    stop("Invalid method specified. Please use 'NN' or 'direct'.")
+  }
+}
+
+
+#' Flexible Mixture Component for Spherical Cauchy Clustering
+#'
+#' @description
+#' Provides a flexible mixture component for spherical Cauchy distribution clustering,
+#' offering different estimation methods for use with the flexmix package.
+#'
+#' @param formula An R formula object specifying the model. Default is `.~.`.
+#' @param method A character string specifying the estimation method. 
+#'        Options are "NN" for a neural network-based approach and "direct" for standard estimation.
+#' @param ... Additional arguments to fine-tune the clustering process.
+#'
+#' @return An object of class "FLXMC" for use in flexmix estimation.
+#'
+#' @details
+#' FLXMCsCauchy offers two different spherical Cauchy clustering methods:
+#' \itemize{
+#'   \item "NN": A neural network-based approach, which may offer more flexibility for complex data structures.
+#'   \item "direct": A standard estimation method, typically faster and suitable for many common scenarios.
+#' }
+#' 
+#' The choice of method can significantly affect clustering results and computation time.
+#' Users are encouraged to experiment with both methods to determine which works best for their specific data and requirements.
+#'
+#' @examples
+#' \dontrun{
+#' library(flexmix)
+#' 
+#' # Using neural network method
+#' model_nn <- flexmix(~., data=your_data, k=2, model=FLXMCsCauchy(method="NN"))
+#'
+#' # Using direct method
+#' model_direct <- flexmix(~., data=your_data, k=2, model=FLXMCsCauchy(method="direct"))
+#'
+#' # Compare results
+#' summary(model_nn)
+#' summary(model_direct)
+#' }
+#'
+#' @seealso
+#' \code{\link[flexmix]{flexmix}} for the main clustering function in the flexmix package.
+#' @export
+FLXMCsCauchy <- function(formula = .~., method = c("NN", "direct"), ...) {
+  method <- match.arg(method)
+  
+  if (method == "NN") {
+    return(SCauchyNN_clust_adam(formula, ...))
+  } else if (method == "direct") {
+    return(SCauchy_clust(formula, ...))
+  } else {
+    stop("Invalid method specified. Use 'NN' or 'direct'.")
+  }
+}

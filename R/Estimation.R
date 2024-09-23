@@ -27,7 +27,7 @@ SCauchy_clust <- function (formula = .~.){
     n <- nrow(y)
     d <- ncol(y)
     para <- M_step_sCauchy(y, w, n, d)
-    df <- (d+1)
+    df <- d
     retval@defineComponent(c(para, df = df))
   }
   retval
@@ -68,7 +68,7 @@ PKBD_clust <- function (formula = .~.){
       component <- list(mu = rep(0,d), rho = runif(1,0.7,0.95)) 
     } 
     para <- M_step_PKBD(y, w, component$mu, component$rho, n, d)
-    df <- (d+1)
+    df <- d
     retval@defineComponent(c( para , df = df))
   }
   retval
@@ -216,7 +216,7 @@ SCauchyNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_ite
       })
       
     }
-    df <- (d+1)
+    df <- d*input_dim
     retval@defineComponent(c(para , df = df, NNmodel = NNmodel))
   }
   retval
@@ -349,7 +349,7 @@ PKBDNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter =
       })
       
     }
-    df <- (d+1)
+    df <- d*input_dim
     retval@defineComponent(c(para , df = df, NNmodel = NNmodel))
   }
   retval
@@ -357,3 +357,101 @@ PKBDNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter =
 
 #######################################################################################
 
+#' Density Function for PKBD
+#'
+#' @description
+#' Calculates the density of the PKBD for given data points.
+#'
+#' @param y A matrix or data frame where each row represents a data point on the unit hypersphere.
+#' @param mu A vector representing the mean direction parameter. Must be normalized.
+#' @param rho A scalar concentration parameter. Must be between 0 and 1.
+#' @param log Logical; if TRUE, the log-density is returned. Default is FALSE.
+#'
+#' @return A vector of density values (or log-density if log = TRUE) for each row in y.
+#'
+#' @details
+#' This function calculates the density of the PKBD for each data point in y, given the
+#' parameters mu and rho. 
+#' @examples
+#' y <- matrix(c(1, 0, 0, 0, 0, 1), ncol = 3, byrow = TRUE)
+#' mu <- c(1, 0, 0)
+#' rho <- 0.5
+#' dpkbd(y, mu, rho)
+#' @export
+dpkbd <- function(y, mu, rho, log = FALSE) {
+  # Check if mu is normalized
+  if (abs(sum(mu^2) - 1) > 1e-8) {
+    stop("mu must be normalized (unit length)")
+  }
+  
+  # Check if rho is between 0 and 1
+  if (rho =< 0 || rho > 1) {
+    stop("rho must be greater or equal than 0 smaller than 1")
+  }
+  
+  # Check if y is normalized
+  y_norms <- sqrt(rowSums(y^2))
+  if (any(abs(y_norms - 1) > 1e-8)) {
+    stop("All data points in y must be normalized (unit length)")
+  }
+  
+  # Calculate density using logLik_PKBD
+  density <- logLik_PKBD(y, mu_vec = mu, rho = rho)
+  
+  # Return log-density if log = TRUE
+  if (log) {
+    return(density)
+  } else {
+    return(exp(density))
+  }
+}
+
+
+#' Density Function for Spherical Cauchy Distribution
+#'
+#' @description
+#' Calculates the density of the spherical Cauchy distribution for given data points.
+#'
+#' @param y A matrix or data frame where each row represents a data point on the unit hypersphere.
+#' @param mu A vector representing the mean direction parameter. Must be normalized.
+#' @param rho A scalar concentration parameter. Must be between 0 and 1.
+#' @param log Logical; if TRUE, the log-density is returned. Default is FALSE.
+#'
+#' @return A vector of density values (or log-density if log = TRUE) for each row in y.
+#'
+#' @details
+#' This function calculates the density of the spherical Cauchy distribution for each data point in y, given the
+#' parameters mu and rho. 
+#' @examples
+#' y <- matrix(c(1, 0, 0, 0, 0, 1), ncol = 3, byrow = TRUE)
+#' mu <- c(1, 0, 0)
+#' rho <- 0.5
+#' dspcauchy(y, mu, rho)
+#' @export
+dspcauchy <- function(y, mu, rho, log = FALSE) {
+  # Check if mu is normalized
+  if (abs(sum(mu^2) - 1) > 1e-8) {
+    stop("mu must be normalized (unit length)")
+  }
+  
+  # Check if rho is between 0 and 1
+  if (rho =< 0 || rho > 1) {
+    stop("rho must be greater or equal than 0 smaller than 1")
+  }
+  
+  # Check if y is normalized
+  y_norms <- sqrt(rowSums(y^2))
+  if (any(abs(y_norms - 1) > 1e-8)) {
+    stop("All data points in y must be normalized (unit length)")
+  }
+  
+  # Calculate density using logLik_PKBD
+  density <- logLik_sCauchy(y, mu_vec = mu, rho = rho)
+  
+  # Return log-density if log = TRUE
+  if (log) {
+    return(density)
+  } else {
+    return(exp(density))
+  }
+}
