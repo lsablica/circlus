@@ -6,14 +6,14 @@ OAI256 <- do.call(rbind, Abstracts[, "OpenAI_embeddings256"])
 
 
 set.seed(1)
-(SC_abstract_8 <- flexmix(OAI256 ~ 1, k = 8, model = circlus::SCauchy_clust()))
+(SC_abstract_8 <- flexmix(OAI256 ~ 1, k = 8, model = FLXMCspcauchy()))
 
 
 
 set.seed(1)
 torch::torch_manual_seed(1)
-(SCNN_abstract_8 <- flexmix(OAI256 ~ 1, k = 8, model = circlus::SCauchyNN_clust_adam(LR= 0.02, adam_iter = 0,
-                                                                                     free_iter = 5)))
+(SCNN_abstract_8 <- flexmix(OAI256 ~ 1, k = 8, model = FLXMRspcauchy(LR= 0.02, adam_iter = 0,
+                                                                               free_iter = 5)))
 
 
 
@@ -193,7 +193,7 @@ num_of_coauthors = Abstracts$number_of_coauthors
 
 set.seed(1)
 torch::torch_manual_seed(1)
-SCNN_abstract_8b <- flexmix(OAI256 ~ 1 + num_of_coauthors, k = 8, model = circlus::SCauchyNN_clust_adam(EPOCHS = 200 ,LR = 0.02, adam_iter = 10))
+SCNN_abstract_8b <- flexmix(OAI256 ~ 1 + num_of_coauthors, k = 8, model = FLXMRspcauchy(EPOCHS = 200, LR = 0.02, adam_iter = 10))
 table(with_num_of_coauthors = SCNN_abstract_8b@cluster, without_num_of_coauthors = SC_abstract_8@cluster)
 
 Abstracts %>%

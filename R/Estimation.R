@@ -1,15 +1,15 @@
 #' @title Spherical Cauchy routine for flexmix
-#' @description  \code{SCauchy_clust} offers a flexmix routine for spherical Cauchy distribution. 
+#' @description  \code{FLXMCspcauchy} offers a flexmix routine for spherical Cauchy distribution. 
 #' @param formula formula
 #' @return  Object of type FLXMC for flexmix estimation.
-#' @rdname SCauchy_clust
+#' @rdname FLXMCspcauchy
 #' @import flexmix
 #' @importFrom methods new
 #' @examples
 #' mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
-#' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = SCauchy_clust())
+#' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMCspcauchy())
 #' @export
-SCauchy_clust <- function (formula = .~.){
+FLXMCspcauchy <- function (formula = .~.){
   retval <- new ("FLXMC", weighted = TRUE ,
                  formula = formula , dist = " SCauchy " ,
                  name = " Spherical Cauchy - based clustering ")
@@ -36,18 +36,18 @@ SCauchy_clust <- function (formula = .~.){
 #################################################################################################
 
 #' @title PKBD routine for flexmix
-#' @description  \code{PKBD_clust} offers a flexmix routine for PKBD distribution. 
+#' @description  \code{FLXMCpkbd} offers a flexmix routine for PKBD distribution. 
 #' @param formula formula
 #' @return Object of type FLXMC for flexmix estimation.
-#' @rdname PKBD_clust
+#' @rdname FLXMCpkbd
 #' @import flexmix
 #' @importFrom methods new
 #' @importFrom stats runif
 #' @examples
 #' mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
-#' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = PKBD_clust())
+#' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMCpkbd())
 #' @export
-PKBD_clust <- function (formula = .~.){
+FLXMCpkbd <- function (formula = .~.){
   retval <- new ("FLXMC" , weighted = TRUE ,
                  formula = formula , dist = " PKBD " ,
                  name = " PKBD - based clustering ")
@@ -112,7 +112,7 @@ scauchy_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
 
 
 #' @title Spherical Cauchy routine using neural networks for flexmix
-#' @description  \code{SCauchyNN_clust_adam} offers a flexmix routine for spherical Cauchy distribution using neural networks and adam optimizer. 
+#' @description  \code{FLXMRspcauchy} offers a flexmix routine for spherical Cauchy distribution using neural networks and adam optimizer. 
 #' @param formula formula
 #' @param EPOCHS number of epochs in the M-step estimation (default: 1)
 #' @param LR learning rate used in the M-steo estimation (default: 0.5)
@@ -123,12 +123,12 @@ scauchy_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
 #' @return Object of type FLXMC for flexmix estimation.
 #' @examples
 #' mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
-#' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = SCauchyNN_clust_adam())
-#' @rdname SCauchyNN_clust_adam
+#' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRspcauchy())
+#' @rdname FLXMRspcauchy
 #' @import flexmix
 #' @import torch
 #' @export
-SCauchyNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200, 
+FLXMRspcauchy <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200, 
                                  adam_iter = 5, free_iter = adam_iter, line_search_fn = "strong_wolfe"){
   retval <- new ("FLXMC" , weighted = TRUE , formula = formula , dist = " PKBD " ,
                  name = " Spherical Cauchy - based clustering using neural networks")
@@ -247,7 +247,7 @@ pkbd_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
 
 
 #' @title PKBD routine using neural networks for flexmix
-#' @description  \code{PKBDNN_clust_adam} offers a flexmix routine for PKBD distribution using neural networks and adam optimizer. 
+#' @description  \code{FLXMRpkbd} offers a flexmix routine for PKBD distribution using neural networks and adam optimizer. 
 #' @param formula formula
 #' @param EPOCHS number of epochs in the M-step estimation (default: 100)
 #' @param LR learning rate used in the M-steo estimation (default: 0.1)
@@ -258,12 +258,12 @@ pkbd_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
 #' @return Object of type FLXMC for flexmix estimation.
 #' @examples
 #' mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
-#' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = PKBDNN_clust_adam())
-#' @rdname PKBDNN_clust_adam
+#' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRpkbd())
+#' @rdname FLXMRpkbd
 #' @import flexmix
 #' @import torch
 #' @export
-PKBDNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200, 
+FLXMRpkbd <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200, 
                               adam_iter = 5, free_iter = adam_iter, line_search_fn = "strong_wolfe"){
   retval <- new ("FLXMC" , weighted = TRUE , formula = formula , dist = " PKBD " ,
                  name = " PKBD - based clustering using neural networks")
@@ -363,8 +363,13 @@ PKBDNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter =
 #' Calculates the density of the PKBD for given data points.
 #'
 #' @param y A matrix or data frame where each row represents a data point on the unit hypersphere.
-#' @param mu A vector representing the mean direction parameter. Must be normalized.
-#' @param rho A scalar concentration parameter. Must be between 0 and 1.
+#' @param mu A vector or matrix representing the mean direction parameter(s). 
+#'        If a vector, it must be normalized (unit length) and is applied to all data points.
+#'        If a matrix, it must have the same number of rows as \code{y}, and each row must be normalized.
+#' @param rho A scalar or a vector representing the concentration parameter. 
+#'        If a vector, its length must match the number of rows in \code{y}. 
+#'        Each \code{rho[i]} is used to evaluate the density for \code{y[i, ]}.
+#'        Must be between 0 (inclusive) and 1 (exclusive).
 #' @param log Logical; if TRUE, the log-density is returned. Default is FALSE.
 #'
 #' @return A vector of density values (or log-density if log = TRUE) for each row in y.
@@ -379,26 +384,63 @@ PKBDNN_clust_adam <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter =
 #' dpkbd(y, mu, rho)
 #' @export
 dpkbd <- function(y, mu, rho, log = FALSE) {
-  # Check if mu is normalized
-  if (abs(sum(mu^2) - 1) > 1e-8) {
-    stop("mu must be normalized (unit length)")
+  if (!is.matrix(y)) {
+    y <- as.matrix(y)
+  }
+  n <- nrow(y)
+  p <- ncol(y)
+  
+  if (is.vector(mu)) {
+    if (length(mu) != p) {
+      stop("mu vector length must match the number of columns in y")
+    }
+    # Check if mu is normalized
+    if (abs(sum(mu^2) - 1) > 1e-8) {
+      stop("mu must be normalized (unit length)")
+    }
+    mu_is_matrix <- FALSE
+  } else if (is.matrix(mu)) {
+    if (nrow(mu) != n) {
+      stop("mu matrix must have the same number of rows as y")
+    }
+    if (ncol(mu) != p) {
+      stop("mu matrix must have the same number of columns as y")
+    }
+    # Check if each row of mu is normalized
+    mu_norms <- sqrt(rowSums(mu^2))
+    if (any(abs(mu_norms - 1) > 1e-8)) {
+      stop("All rows of mu must be normalized (unit length)")
+    }
+    mu_is_matrix <- TRUE
+  } else {
+    stop("mu must be either a vector or a matrix")
   }
   
-  # Check if rho is between 0 and 1
-  if (rho =< 0 || rho > 1) {
-    stop("rho must be greater or equal than 0 smaller than 1")
+  rho <- c(rho)
+  if (!(is.numeric(rho) && (length(rho) == 1 || length(rho) == n))) {
+    stop("rho must be a numeric scalar or a vector with the same length as the number of rows in y")
   }
-  
+
+  # Check if all rho values are between 0 (inclusive) and 1 (exclusive)
+  if (any(rho < 0) || any(rho >= 1)) {
+    stop("All rho values must be between 0 (inclusive) and 1 (exclusive)")
+  }
+  if(mu_is_matrix) rho_vector <- rep(rho, length.out = nrow(mu))
   # Check if y is normalized
   y_norms <- sqrt(rowSums(y^2))
   if (any(abs(y_norms - 1) > 1e-8)) {
     stop("All data points in y must be normalized (unit length)")
   }
   
-  # Calculate density using logLik_PKBD
-  density <- logLik_PKBD(y, mu_vec = mu, rho = rho)
+  if(mu_is_matrix){
+    density <- mapply(function(row, mu_row, r){
+      logLik_PKBD(matrix(row, nrow = 1), mu_vec = mu_row, rho = r)},
+      split(y, seq(n)), split(mu, seq(n)), rho_vector)
+    names(density) <- NULL
+  } else{
+    density <- c(logLik_PKBD(y, mu_vec = mu, rho = rho))
+  }
   
-  # Return log-density if log = TRUE
   if (log) {
     return(density)
   } else {
@@ -413,8 +455,13 @@ dpkbd <- function(y, mu, rho, log = FALSE) {
 #' Calculates the density of the spherical Cauchy distribution for given data points.
 #'
 #' @param y A matrix or data frame where each row represents a data point on the unit hypersphere.
-#' @param mu A vector representing the mean direction parameter. Must be normalized.
-#' @param rho A scalar concentration parameter. Must be between 0 and 1.
+#' @param mu A vector or matrix representing the mean direction parameter(s). 
+#'        If a vector, it must be normalized (unit length) and is applied to all data points.
+#'        If a matrix, it must have the same number of rows as \code{y}, and each row must be normalized.
+#' @param rho A scalar or a vector representing the concentration parameter. 
+#'        If a vector, its length must match the number of rows in \code{y}. 
+#'        Each \code{rho[i]} is used to evaluate the density for \code{y[i, ]}.
+#'        Must be between 0 (inclusive) and 1 (exclusive).
 #' @param log Logical; if TRUE, the log-density is returned. Default is FALSE.
 #'
 #' @return A vector of density values (or log-density if log = TRUE) for each row in y.
@@ -429,26 +476,65 @@ dpkbd <- function(y, mu, rho, log = FALSE) {
 #' dspcauchy(y, mu, rho)
 #' @export
 dspcauchy <- function(y, mu, rho, log = FALSE) {
-  # Check if mu is normalized
-  if (abs(sum(mu^2) - 1) > 1e-8) {
-    stop("mu must be normalized (unit length)")
+  # Ensure y is a matrix
+  if (!is.matrix(y)) {
+    y <- as.matrix(y)
+  }
+  n <- nrow(y)
+  p <- ncol(y)
+  
+  if (is.vector(mu)) {
+    if (length(mu) != p) {
+      stop("mu vector length must match the number of columns in y")
+    }
+    # Check if mu is normalized
+    if (abs(sum(mu^2) - 1) > 1e-5) {
+      stop("mu must be normalized (unit length)")
+    }
+    mu_is_matrix <- FALSE
+  } else if (is.matrix(mu)) {
+    if (nrow(mu) != n) {
+      stop("mu matrix must have the same number of rows as y")
+    }
+    if (ncol(mu) != p) {
+      stop("mu matrix must have the same number of columns as y")
+    }
+    # Check if each row of mu is normalized
+    mu_norms <- sqrt(rowSums(mu^2))
+    if (any(abs(mu_norms - 1) > 1e-5)) {
+      stop("All rows of mu must be normalized (unit length)")
+    }
+    mu_is_matrix <- TRUE
+  } else {
+    stop("mu must be either a vector or a matrix")
   }
   
-  # Check if rho is between 0 and 1
-  if (rho =< 0 || rho > 1) {
-    stop("rho must be greater or equal than 0 smaller than 1")
+  rho <- c(rho)
+  if (!(is.numeric(rho) && (length(rho) == 1 || length(rho) == n))) {
+    stop("rho must be a numeric scalar or a vector with the same length as the number of rows in y")
   }
+  
+  # Check if all rho values are between 0 (inclusive) and 1 (exclusive)
+  if (any(rho < 0) || any(rho >= 1)) {
+    stop("All rho values must be between 0 (inclusive) and 1 (exclusive)")
+  }
+  if(mu_is_matrix) rho_vector <- rep(rho, length.out = nrow(mu))
   
   # Check if y is normalized
   y_norms <- sqrt(rowSums(y^2))
-  if (any(abs(y_norms - 1) > 1e-8)) {
+  if (any(abs(y_norms - 1) > 1e-5)) {
     stop("All data points in y must be normalized (unit length)")
   }
   
-  # Calculate density using logLik_PKBD
-  density <- logLik_sCauchy(y, mu_vec = mu, rho = rho)
+  if(mu_is_matrix){
+    density <- mapply(function(row, mu_row, r){
+      logLik_sCauchy(matrix(row, nrow = 1), mu_vec = mu_row, rho = r)},
+      split(y, seq(n)), split(mu, seq(n)), rho_vector)
+    names(density) <- NULL
+  } else{
+    density <- c(logLik_sCauchy(y, mu_vec = mu, rho = rho))
+  }
   
-  # Return log-density if log = TRUE
   if (log) {
     return(density)
   } else {
