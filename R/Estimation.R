@@ -23,6 +23,16 @@ FLXMCspcauchy <- function (formula = .~.){
     new ("FLXcomponent" , parameters = list(mu = para$mu, rho = para$rho),
          df = para$df , logLik = logLik , predict = predict)
   }
+  retval@preproc.y <- function(y){
+    norms <- rowSums(y^2)
+    return(y/sqrt(norms))
+  }
+  
+  retval@preproc.x <- function(x){
+    if (ncol(x) > 1) 
+      stop(paste("for the FLXMCspcauchy x must be univariate, use FLXMRspcauchy for problems with covariates"))
+    x
+  }
   retval@fit <- function (x , y , w , ...) {
     n <- nrow(y)
     d <- ncol(y)
@@ -60,6 +70,16 @@ FLXMCpkbd <- function (formula = .~.){
     }
     new ("FLXcomponent" , parameters = list( mu = para$mu , rho = para$rho ),
          df = para$df , logLik = logLik , predict = predict )
+  }
+  retval@preproc.y <- function(y){
+    norms <- rowSums(y^2)
+    return(y/sqrt(norms))
+  }
+  
+  retval@preproc.x <- function(x){
+    if (ncol(x) > 1) 
+      stop(paste("for the FLXMCpkbd x must be univariate, use FLXMRpkbd for problems with covariates"))
+    x
   }
   retval@fit <- function (x , y , w , component) {
     n <- nrow(y)
@@ -161,6 +181,10 @@ FLXMRspcauchy <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200
          df = para$df , logLik = logLik , predict = predict)
   }
   
+  retval@preproc.y <- function(y){
+    norms <- rowSums(y^2)
+    return(y/sqrt(norms))
+  }
   
   retval@fit <- function (x , y , w , component) {
     
@@ -294,6 +318,10 @@ FLXMRpkbd <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200,
          df = para$df , logLik = logLik , predict = predict)
   }
   
+  retval@preproc.y <- function(y){
+    norms <- rowSums(y^2)
+    return(y/sqrt(norms))
+  }
   
   retval@fit <- function (x , y , w , component) {
     
@@ -395,7 +423,7 @@ dpkbd <- function(y, mu, rho, log = FALSE) {
       stop("mu vector length must match the number of columns in y")
     }
     # Check if mu is normalized
-    if (abs(sum(mu^2) - 1) > 1e-8) {
+    if (abs(sum(mu^2) - 1) > 1e-5) {
       stop("mu must be normalized (unit length)")
     }
     mu_is_matrix <- FALSE
@@ -408,7 +436,7 @@ dpkbd <- function(y, mu, rho, log = FALSE) {
     }
     # Check if each row of mu is normalized
     mu_norms <- sqrt(rowSums(mu^2))
-    if (any(abs(mu_norms - 1) > 1e-8)) {
+    if (any(abs(mu_norms - 1) > 1e-5)) {
       stop("All rows of mu must be normalized (unit length)")
     }
     mu_is_matrix <- TRUE
@@ -428,7 +456,7 @@ dpkbd <- function(y, mu, rho, log = FALSE) {
   if(mu_is_matrix) rho_vector <- rep(rho, length.out = nrow(mu))
   # Check if y is normalized
   y_norms <- sqrt(rowSums(y^2))
-  if (any(abs(y_norms - 1) > 1e-8)) {
+  if (any(abs(y_norms - 1) > 1e-5)) {
     stop("All data points in y must be normalized (unit length)")
   }
   
@@ -540,4 +568,54 @@ dspcauchy <- function(y, mu, rho, log = FALSE) {
   } else {
     return(exp(density))
   }
+}
+
+
+
+
+
+#' @title Spherical Cauchy routine for flexmix
+#' @description  \code{FLXMCspcauchy} offers a flexmix routine for spherical Cauchy distribution. 
+#' @param formula formula
+#' @return  Object of type FLXMC for flexmix estimation.
+#' @rdname FLXMCspcauchy
+#' @import flexmix
+#' @importFrom methods new
+#' @examples
+#' mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
+#' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMCspcauchy2())
+#' @export
+FLXMCspcauchy2 <- function (formula = .~.){
+  retval <- new ("FLXMC", weighted = TRUE ,
+                 formula = formula , dist = " SCauchy " ,
+                 name = " Spherical Cauchy - based clustering ")
+  retval@defineComponent <- function (para, df) {
+    logLik <- function (x, y){
+      logLik_sCauchy(y , mu_vec = para$mu , rho = para$rho)
+    }
+    predict <- function(x){
+      para$mu
+    }
+    new ("FLXcomponent" , parameters = list(mu = para$mu, rho = para$rho),
+         df = para$df , logLik = logLik , predict = predict)
+  }
+  retval@preproc.y <- function(y){
+    norms <- rowSums(y^2)
+    return(y/sqrt(norms))
+  }
+  
+  retval@preproc.x <- function(x){
+    if (ncol(x) > 1) 
+      stop(paste("for the FLXMCspcauchy x must be univariate, use FLXMRspcauchy for problems with covariates"))
+    x
+  }
+  
+  retval@fit <- function (x , y , w , ...) {
+    n <- nrow(y)
+    d <- ncol(y)
+    para <- M_step_sCauchy(y, w, n, d)
+    df <- d
+    retval@defineComponent(c(para, df = df))
+  }
+  retval
 }

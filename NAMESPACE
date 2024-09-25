@@ -2,6 +2,7 @@
 
 export(FLXMCpkbd)
 export(FLXMCspcauchy)
+export(FLXMCspcauchy2)
 export(FLXMRpkbd)
 export(FLXMRspcauchy)
 export(dpkbd)

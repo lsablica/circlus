@@ -2,20 +2,29 @@
 % Please edit documentation in R/Estimation.R
 \name{FLXMCspcauchy}
 \alias{FLXMCspcauchy}
+\alias{FLXMCspcauchy2}
 \title{Spherical Cauchy routine for flexmix}
 \usage{
 FLXMCspcauchy(formula = . ~ .)
+
+FLXMCspcauchy2(formula = . ~ .)
 }
 \arguments{
 \item{formula}{formula}
 }
 \value{
 Object of type FLXMC for flexmix estimation.
+
+Object of type FLXMC for flexmix estimation.
 }
 \description{
+\code{FLXMCspcauchy} offers a flexmix routine for spherical Cauchy distribution.
+
 \code{FLXMCspcauchy} offers a flexmix routine for spherical Cauchy distribution.
 }
 \examples{
 mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
 m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMCspcauchy())
+mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
+m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMCspcauchy2())
 }

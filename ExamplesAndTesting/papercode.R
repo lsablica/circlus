@@ -190,10 +190,15 @@ Abstracts %>%
 
 num_of_coauthors = Abstracts$number_of_coauthors
 
-
+# NOTE: The following function may not produce identical results across different hardware setups.
+# While the results are reproducible on the same computer, we have observed differences when 
+# running the same code on different machines. We suspect that this issue is related to a bug 
+# in the torch package (see https://github.com/mlverse/torch/issues/1178), where the number of 
+# threads cannot be set properly, leading to hardware-dependent variations in the output.
 set.seed(1)
 torch::torch_manual_seed(1)
 SCNN_abstract_8b <- flexmix(OAI256 ~ 1 + num_of_coauthors, k = 8, model = FLXMRspcauchy(EPOCHS = 200, LR = 0.02, adam_iter = 10))
+SCNN_abstract_8b
 table(with_num_of_coauthors = SCNN_abstract_8b@cluster, without_num_of_coauthors = SC_abstract_8@cluster)
 
 Abstracts %>%
