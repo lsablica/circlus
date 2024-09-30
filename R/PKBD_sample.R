@@ -56,11 +56,11 @@ rPKBD_Saw <-function(n, rho, mu) {
 #'     angular central Gaussian distribution envelopes and `"Saw"` for
 #'     the use of projected Saw distributions.
 #' @return A matrix with the generated values.
-#' @rdname rPKBD
+#' @rdname rpkbd
 #' @examples
-#' rPKBD(10, 0.95, c(1, 0, 0))
+#' rpkbd(10, 0.95, c(1, 0, 0))
 #' @export
-rPKBD <- function(n, rho, mu, method = "ACG") {
+rpkbd <- function(n, rho, mu, method = "ACG") {
   if (method == "ACG") {
     return(rPKBD_ACG(n, rho, mu)) 
   } else if (method == "Saw") {

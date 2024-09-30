@@ -55,16 +55,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rsCauchy
-arma::mat rsCauchy(int n, double rho, arma::vec& mu);
-RcppExport SEXP _circlus_rsCauchy(SEXP nSEXP, SEXP rhoSEXP, SEXP muSEXP) {
+// rscauchy
+arma::mat rscauchy(int n, double rho, arma::vec& mu);
+RcppExport SEXP _circlus_rscauchy(SEXP nSEXP, SEXP rhoSEXP, SEXP muSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
     Rcpp::traits::input_parameter< double >::type rho(rhoSEXP);
     Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
-    rcpp_result_gen = Rcpp::wrap(rsCauchy(n, rho, mu));
+    rcpp_result_gen = Rcpp::wrap(rscauchy(n, rho, mu));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -102,7 +102,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_circlus_M_step_PKBD", (DL_FUNC) &_circlus_M_step_PKBD, 8},
     {"_circlus_logLik_PKBD", (DL_FUNC) &_circlus_logLik_PKBD, 3},
     {"_circlus_rPKBD_ACG", (DL_FUNC) &_circlus_rPKBD_ACG, 3},
-    {"_circlus_rsCauchy", (DL_FUNC) &_circlus_rsCauchy, 3},
+    {"_circlus_rscauchy", (DL_FUNC) &_circlus_rscauchy, 3},
     {"_circlus_M_step_sCauchy", (DL_FUNC) &_circlus_M_step_sCauchy, 6},
     {"_circlus_logLik_sCauchy", (DL_FUNC) &_circlus_logLik_sCauchy, 3},
     {NULL, NULL, 0}

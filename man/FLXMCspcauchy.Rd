@@ -17,6 +17,6 @@ This model driver for flexmix implements model-based
     clustering of spherical Cauchy distributions.
 }
 \examples{
-mix <- rbind(rPKBD(30, 0.95, c(1, 0, 0)), rPKBD(30, 0.9, c(-1, 0, 0)))
+mix <- rbind(rpkbd(30, 0.95, c(1, 0, 0)), rpkbd(30, 0.9, c(-1, 0, 0)))
 m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMCspcauchy())
 }

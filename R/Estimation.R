@@ -7,7 +7,7 @@
 #' @import flexmix
 #' @importFrom methods new
 #' @examples
-#' mix <- rbind(rPKBD(30, 0.95, c(1, 0, 0)), rPKBD(30, 0.9, c(-1, 0, 0)))
+#' mix <- rbind(rpkbd(30, 0.95, c(1, 0, 0)), rpkbd(30, 0.9, c(-1, 0, 0)))
 #' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMCspcauchy())
 #' @export
 FLXMCspcauchy <- function(formula = .~.) {
@@ -56,7 +56,7 @@ FLXMCspcauchy <- function(formula = .~.) {
 #' @importFrom methods new
 #' @importFrom stats runif
 #' @examples
-#' mix <- rbind(rPKBD(30, 0.95, c(1, 0, 0)), rPKBD(30, 0.9, c(-1, 0, 0)))
+#' mix <- rbind(rpkbd(30, 0.95, c(1, 0, 0)), rpkbd(30, 0.9, c(-1, 0, 0)))
 #' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMCpkbd())
 #' @export
 FLXMCpkbd <- function(formula = .~.){
@@ -144,7 +144,7 @@ scauchy_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
 #' @return Returns an object of class `FLXMC`.
 #' @examples
 #' \dontrun{
-#' mix <- rbind(rPKBD(30, 0.95, c(1, 0, 0)), rPKBD(30, 0.9, c(-1, 0, 0)))
+#' mix <- rbind(rpkbd(30, 0.95, c(1, 0, 0)), rpkbd(30, 0.9, c(-1, 0, 0)))
 #' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRspcauchy()
 #' }
 #' @rdname FLXMRspcauchy
@@ -287,7 +287,7 @@ pkbd_weighted_neg_log_likelihood <- function(mu, rho, Y, W) {
 #' @return Returns an object of class `FLXMC`.
 #' @examples
 #' \dontrun{
-#'  mix <- rbind(rPKBD(30, 0.95, c(1, 0, 0)), rPKBD(30, 0.9, c(-1, 0, 0)))
+#'  mix <- rbind(rpkbd(30, 0.95, c(1, 0, 0)), rpkbd(30, 0.9, c(-1, 0, 0)))
 #'  m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRpkbd())
 #' }
 #' @rdname FLXMRpkbd
