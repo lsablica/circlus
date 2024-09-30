@@ -2,29 +2,21 @@
 % Please edit documentation in R/Estimation.R
 \name{FLXMCspcauchy}
 \alias{FLXMCspcauchy}
-\alias{FLXMCspcauchy2}
-\title{Spherical Cauchy routine for flexmix}
+\title{Spherical Cauchy Driver for FlexMix}
 \usage{
 FLXMCspcauchy(formula = . ~ .)
-
-FLXMCspcauchy2(formula = . ~ .)
 }
 \arguments{
-\item{formula}{formula}
+\item{formula}{A formula.}
 }
 \value{
-Object of type FLXMC for flexmix estimation.
-
-Object of type FLXMC for flexmix estimation.
+Returns an object of class \code{FLXMC}.
 }
 \description{
-\code{FLXMCspcauchy} offers a flexmix routine for spherical Cauchy distribution.
-
-\code{FLXMCspcauchy} offers a flexmix routine for spherical Cauchy distribution.
+This model driver for flexmix implements model-based
+clustering of spherical Cauchy distributions.
 }
 \examples{
-mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
+mix <- rbind(rPKBD(30, 0.95, c(1, 0, 0)), rPKBD(30, 0.9, c(-1, 0, 0)))
 m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMCspcauchy())
-mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
-m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMCspcauchy2())
 }

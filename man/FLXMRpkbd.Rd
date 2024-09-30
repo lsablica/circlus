@@ -2,7 +2,7 @@
 % Please edit documentation in R/Estimation.R
 \name{FLXMRpkbd}
 \alias{FLXMRpkbd}
-\title{PKBD routine using neural networks for flexmix}
+\title{PKBD Driver for FlexMix Using Neural Networks}
 \usage{
 FLXMRpkbd(
   formula = . ~ .,
@@ -15,27 +15,28 @@ FLXMRpkbd(
 )
 }
 \arguments{
-\item{formula}{formula}
+\item{formula}{A formula.}
 
-\item{EPOCHS}{number of epochs in the M-step estimation (default: 100)}
+\item{EPOCHS}{The number of epochs in the M-step estimation (default: 100).}
 
-\item{LR}{learning rate used in the M-steo estimation (default: 0.1)}
+\item{LR}{The learning rate used in the M-step estimation (default: 0.1).}
 
-\item{max_iter}{maximum number of iterations of the LBFGS optimizer (default: 200)}
+\item{max_iter}{The maximum number of iterations of the LBFGS optimizer (default: 200).}
 
-\item{adam_iter}{number of iteration for which the adam optimizer is used before the algorithm switches to L-BFGS (default: 5)}
+\item{adam_iter}{The number of iteration for which the adam optimizer is used before the algorithm switches to L-BFGS (default: 5).}
 
-\item{free_iter}{number of initial iterations for which the model in M-step is fully reseted (default: adam_iter)}
+\item{free_iter}{The number of initial iterations for which the model in M-step is fully reseted (default: adam_iter).}
 
-\item{line_search_fn}{method used for line search in LBFGS (default: "strong_wolfe")}
+\item{line_search_fn}{The method used for line search in LBFGS (default: "strong_wolfe").}
 }
 \value{
-Object of type FLXMC for flexmix estimation.
+Returns an object of class \code{FLXMC}.
 }
 \description{
-\code{FLXMRpkbd} offers a flexmix routine for PKBD distribution using neural networks and adam optimizer.
+This model driver for flexmix implements model-based
+clustering of PKBD distributions using neural network in the M-step.
 }
 \examples{
-mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
+mix <- rbind(rPKBD(30, 0.95, c(1, 0, 0)), rPKBD(30, 0.9, c(-1, 0, 0)))
 m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRpkbd())
 }

@@ -2,23 +2,21 @@
 % Please edit documentation in R/PKBD_sample.R
 \name{rPKBD_Saw}
 \alias{rPKBD_Saw}
-\title{Random Sampling from PKBD Distributions using projected Saw distribution}
+\title{Random Sampling from PKBD Distributions using Projected Saw Distribution}
 \usage{
 rPKBD_Saw(n, rho, mu)
 }
 \arguments{
-\item{n}{number of random draws.}
+\item{n}{The number of random draws.}
 
-\item{rho}{a numeric giving the concentration parameter.}
+\item{rho}{A numeric giving the concentration parameter.}
 
-\item{mu}{a numeric vector giving the mean direction parameter.}
+\item{mu}{A numeric vector giving the mean direction parameter.}
 }
 \value{
-A vector the generated values.
+A matrix with the generated values.
 }
 \description{
-\code{rPKBD_Saw} generates a random sample from PKBD distributions.
+Generates a random sample from PKBD distributions.
 }
-\details{
-The function generates samples from PKBD using projected Saw distribution.
-}
+\keyword{internal}

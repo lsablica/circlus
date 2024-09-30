@@ -1,27 +1,28 @@
-#' @title Spherical Cauchy routine for flexmix
-#' @description  \code{FLXMCspcauchy} offers a flexmix routine for spherical Cauchy distribution. 
-#' @param formula formula
-#' @return  Object of type FLXMC for flexmix estimation.
+#' @title Spherical Cauchy Driver for FlexMix
+#' @description This model driver for flexmix implements model-based
+#'     clustering of spherical Cauchy distributions.
+#' @param formula A formula.
+#' @return Returns an object of class `FLXMC`.
 #' @rdname FLXMCspcauchy
 #' @import flexmix
 #' @importFrom methods new
 #' @examples
-#' mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
+#' mix <- rbind(rPKBD(30, 0.95, c(1, 0, 0)), rPKBD(30, 0.9, c(-1, 0, 0)))
 #' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMCspcauchy())
 #' @export
-FLXMCspcauchy <- function (formula = .~.){
-  retval <- new ("FLXMC", weighted = TRUE ,
-                 formula = formula , dist = " SCauchy " ,
-                 name = " Spherical Cauchy - based clustering ")
-  retval@defineComponent <- function (para, df) {
-    logLik <- function (x, y){
-      logLik_sCauchy(y , mu_vec = para$mu , rho = para$rho)
+FLXMCspcauchy <- function(formula = .~.) {
+  retval <- new("FLXMC", weighted = TRUE,
+                formula = formula, dist = "SCauchy",
+                name = "Spherical Cauchy-based clustering")
+  retval@defineComponent <- function(para) {
+    logLik <- function(x, y) {
+      logLik_sCauchy(y, mu_vec = para$mu, rho = para$rho)
     }
-    predict <- function(x){
+    predict <- function(x) {
       para$mu
     }
-    new ("FLXcomponent" , parameters = list(mu = para$mu, rho = para$rho),
-         df = para$df , logLik = logLik , predict = predict)
+    new("FLXcomponent", parameters = list(mu = para$mu, rho = para$rho),
+        df = para$df, logLik = logLik, predict = predict)
   }
   retval@preproc.y <- function(y){
     norms <- rowSums(y^2)
@@ -33,43 +34,44 @@ FLXMCspcauchy <- function (formula = .~.){
       stop(paste("for the FLXMCspcauchy x must be univariate, use FLXMRspcauchy for problems with covariates"))
     x
   }
-  retval@fit <- function (x , y , w , ...) {
+  retval@fit <- function(x, y, w, ...) {
     n <- nrow(y)
     d <- ncol(y)
     para <- M_step_sCauchy(y, w, n, d)
-    df <- d
-    retval@defineComponent(c(para, df = df))
+    para$df <- d
+    retval@defineComponent(para)
   }
   retval
 }
 
 #################################################################################################
 
-#' @title PKBD routine for flexmix
-#' @description  \code{FLXMCpkbd} offers a flexmix routine for PKBD distribution. 
-#' @param formula formula
-#' @return Object of type FLXMC for flexmix estimation.
+#' @title PKBD Driver for FlexMix
+#' @description This model driver for flexmix implements model-based
+#'     clustering of PKBD distributions.
+#' @param formula A formula.
+#' @return Returns an object of class `FLXMC`.
 #' @rdname FLXMCpkbd
 #' @import flexmix
 #' @importFrom methods new
 #' @importFrom stats runif
 #' @examples
-#' mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
+#' mix <- rbind(rPKBD(30, 0.95, c(1, 0, 0)), rPKBD(30, 0.9, c(-1, 0, 0)))
 #' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMCpkbd())
 #' @export
-FLXMCpkbd <- function (formula = .~.){
-  retval <- new ("FLXMC" , weighted = TRUE ,
-                 formula = formula , dist = " PKBD " ,
-                 name = " PKBD - based clustering ")
-  retval@defineComponent <- function (para, df) {
-    logLik <- function (x , y ) {
-      logLik_PKBD(y , mu_vec = para$mu , rho = para$rho)
+FLXMCpkbd <- function(formula = .~.){
+  retval <- new("FLXMC", weighted = TRUE,
+                formula = formula, dist = "PKBD",
+                name = "PKBD-based clustering")
+  retval@defineComponent <- function(para) {
+    logLik <- function(x, y) {
+      logLik_PKBD(y, mu_vec = para$mu, rho = para$rho)
     }
-    predict <- function ( x ) {
+    predict <- function(x) {
       para$mu
     }
-    new ("FLXcomponent" , parameters = list( mu = para$mu , rho = para$rho ),
-         df = para$df , logLik = logLik , predict = predict )
+    new("FLXcomponent", parameters = list(mu = para$mu, rho = para$rho),
+         df = para$df, logLik = logLik, predict = predict)
   }
   retval@preproc.y <- function(y){
     norms <- rowSums(y^2)
@@ -81,80 +83,80 @@ FLXMCpkbd <- function (formula = .~.){
       stop(paste("for the FLXMCpkbd x must be univariate, use FLXMRpkbd for problems with covariates"))
     x
   }
-  retval@fit <- function (x , y , w , component) {
+  retval@fit <- function(x, y, w, component) {
     n <- nrow(y)
     d <- ncol(y)
-    if(length(component)==0){
-      component <- list(mu = rep(0,d), rho = runif(1,0.7,0.95)) 
+    if (length(component) == 0) {
+      component <- list(mu = rep(0, d), rho = runif(1, 0.7, 0.95)) 
     } 
     para <- M_step_PKBD(y, w, component$mu, component$rho, n, d)
-    df <- d
-    retval@defineComponent(c( para , df = df))
+    para$df <- d
+    retval@defineComponent(para)
   }
   retval
 }
 
 #################################################################################################
 
-
 Spherical <- nn_module(
   "Spherical",
   initialize = function(input_dim, output_dim) {
-    self$fc = nn_linear(input_dim, output_dim, bias = FALSE)
-    self$output_dim = output_dim
+    self$fc <- nn_linear(input_dim, output_dim, bias = FALSE)
+    self$output_dim <- output_dim
   },
   forward = function(x) {
-    mu = self$fc(x)
-    normm = mu$norm(dim=-1, keepdim=TRUE)
-    rho = normm / (1 + normm)
-    mu = mu / normm
+    mu <- self$fc(x)
+    normm <- mu$norm(dim = -1, keepdim = TRUE)
+    rho <- normm /(1 + normm)
+    mu <- mu / normm
     list(mu = mu, rho = rho)
   }
 )
 
-scauchy_log_likelihood <- function(mu, rho, Y){
-  d = Y$shape[2]
-  term1 = (1-rho^2)$log()
-  term2 = 1 + rho^2 - 2* rho*((mu$unsqueeze(2)$matmul(Y$unsqueeze(3)))$squeeze(3))
-  log_likelihood = (d-1)*term1 - (d-1)*term2$log()
+scauchy_log_likelihood <- function(mu, rho, Y) {
+  d <- Y$shape[2]
+  term1 <- (1-rho^2)$log()
+  term2 <- 1 + rho^2 - 2 * rho * ((mu$unsqueeze(2)$matmul(Y$unsqueeze(3)))$squeeze(3))
+  log_likelihood <- (d-1) * term1 - (d-1) * term2$log()
   return(as_array(log_likelihood))
 }
 
 scauchy_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
-  d = Y$shape[2]
-  term1 = (1-rho^2)$log()
-  term2 = 1 + rho^2 - 2* rho*((mu$unsqueeze(2)$matmul(Y$unsqueeze(3)))$squeeze(3))
-  neg_log_likelihood = (d-1)*term2$log() - (d-1)*term1
-  result = (neg_log_likelihood * W)$sum()
+  d <- Y$shape[2]
+  term1 <- (1-rho^2)$log()
+  term2 <- 1 + rho^2 - 2 * rho * ((mu$unsqueeze(2)$matmul(Y$unsqueeze(3)))$squeeze(3))
+  neg_log_likelihood <- (d-1) * term2$log() - (d-1) * term1
+  result <- (neg_log_likelihood * W)$sum()
   return(result)
 }
 
-
-
-#' @title Spherical Cauchy routine using neural networks for flexmix
-#' @description  \code{FLXMRspcauchy} offers a flexmix routine for spherical Cauchy distribution using neural networks and adam optimizer. 
-#' @param formula formula
-#' @param EPOCHS number of epochs in the M-step estimation (default: 1)
-#' @param LR learning rate used in the M-steo estimation (default: 0.5)
-#' @param max_iter maximum number of iterations of the LBFGS optimizer (default: 200)
-#' @param adam_iter number of iteration for which the adam optimizer is used before the algorithm switches to L-BFGS (default: 5)
-#' @param free_iter number of initial iterations for which the model in M-step is fully reseted (default: adam_iter)
-#' @param line_search_fn method used for line search in LBFGS (default: "strong_wolfe")
-#' @return Object of type FLXMC for flexmix estimation.
+#' @title Spherical Cauchy Driver for FlexMix Using Neural Networks
+#' @description This model driver for flexmix implements model-based
+#'     clustering of spherical Cauchy distributions using neural
+#'     networks in the M-step.
+#' @param formula A formula.
+#' @param EPOCHS EPOCHS The number of epochs in the M-step estimation (default: 100).
+#' @param LR The learning rate used in the M-steo estimation (default: 0.1).
+#' @param max_iter The maximum number of iterations of the LBFGS optimizer (default: 200).
+#' @param adam_iter The number of iteration for which the adam optimizer is used before the algorithm switches to L-BFGS (default: 5).
+#' @param free_iter The number of initial iterations for which the model in M-step is fully reseted (default: adam_iter).
+#' @param line_search_fn The method used for line search in LBFGS (default: "strong_wolfe").
+#' @return Returns an object of class `FLXMC`.
 #' @examples
-#' mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
+#' mix <- rbind(rPKBD(30, 0.95, c(1, 0, 0)), rPKBD(30, 0.9, c(-1, 0, 0)))
 #' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRspcauchy())
 #' @rdname FLXMRspcauchy
 #' @import flexmix
 #' @import torch
+#' @importFrom methods new
 #' @export
 FLXMRspcauchy <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200, 
                                  adam_iter = 5, free_iter = adam_iter, line_search_fn = "strong_wolfe"){
-  retval <- new ("FLXMC" , weighted = TRUE , formula = formula , dist = " PKBD " ,
-                 name = " Spherical Cauchy - based clustering using neural networks")
-  retval@defineComponent <- function (para, df) {
+  retval <- new ("FLXMC", weighted = TRUE, formula = formula, dist = "PKBD",
+                 name = "Spherical Cauchy-based clustering using neural networks")
+  retval@defineComponent <- function(para, df) {
     NNmodel = para$NNmodel
-    logLik <- function (x , y ) {
+    logLik <- function(x, y) {
       X = torch_tensor(x)
       Y = torch_tensor(y)
       
@@ -162,11 +164,10 @@ FLXMRspcauchy <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200
       with_no_grad({ 
         para_new <- NNmodel(X)
       })
-      scauchy_log_likelihood(mu = para_new$mu , rho = para_new$rho, Y)
-      #(mu = para$mu , rho = para$rho, Y)
+      scauchy_log_likelihood(mu = para_new$mu, rho = para_new$rho, Y)
+      #(mu = para$mu, rho = para$rho, Y)
     }
-    predict <- function ( x ) {
-      #print(x)
+    predict <- function(x) {
       X = torch_tensor(x)
       NNmodel$eval()
       with_no_grad({ 
@@ -174,11 +175,12 @@ FLXMRspcauchy <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200
       })
       para_new$mu <- torch::as_array(para_new$mu)
       para_new$rho <- torch::as_array(para_new$rho)
-      #print(para_new)
       return(para_new)
     }
-    new ("FLXcomponent" , parameters = list(mu = torch::as_array(para$mu) , rho = torch::as_array(para$rho), model = NNmodel),
-         df = para$df , logLik = logLik , predict = predict)
+    new("FLXcomponent", parameters = list(mu = torch::as_array(para$mu),
+                                          rho = torch::as_array(para$rho),
+                                          model = NNmodel),
+         df = para$df, logLik = logLik, predict = predict)
   }
   
   retval@preproc.y <- function(y){
@@ -186,49 +188,48 @@ FLXMRspcauchy <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200
     return(y/sqrt(norms))
   }
   
-  retval@fit <- function (x , y , w , component) {
-    
-    iteration <- eval(quote(get("iter")),parent.frame(n=8))
+  retval@fit <- function(x, y, w, component) {
+    iteration <- eval(quote(get("iter")), parent.frame(n = 8))
     n <- nrow(y)
     d <- ncol(y)
-    input_dim = ncol(x)
-    output_dim = d
-    EPOCHS = EPOCHS
-    LR = LR
-    Y = torch_tensor(y)
-    X = torch_tensor(x)
-    W = torch_tensor(matrix(w/sum(w), ncol = 1))
+    input_dim <- ncol(x)
+    output_dim <- d
+    EPOCHS <- EPOCHS
+    LR <- LR
+    Y <- torch_tensor(y)
+    X <- torch_tensor(x)
+    W <- torch_tensor(matrix(w/sum(w), ncol = 1))
     
     
-    if(iteration <= adam_iter){
-      #print("adam")
-      if(iteration <= free_iter){
-        component$model = Spherical(input_dim, output_dim)
+    if (iteration <= adam_iter) {
+      if (iteration <= free_iter) {
+        component$model <- Spherical(input_dim, output_dim)
       } 
-      NNmodel = component$model
-      optimizer = optim_adam(NNmodel$parameters, lr = LR)
+      NNmodel <- component$model
+      optimizer <- optim_adam(NNmodel$parameters, lr = LR)
       NNmodel$train()
-      for(epoch in seq_len(EPOCHS)){
+      for (epoch in seq_len(EPOCHS)) {
         optimizer$zero_grad()
-        res = NNmodel(X)
-        loss = scauchy_weighted_neg_log_likelihood(res$mu, res$rho, Y, W)
+        res <- NNmodel(X)
+        loss <- scauchy_weighted_neg_log_likelihood(res$mu, res$rho, Y, W)
         loss$backward()
         optimizer$step()
       }
       para <- res  
     } else{
-      #print("lbfgs")
       if(iteration <= free_iter){
-        component$model = Spherical(input_dim, output_dim)
+        component$model <- Spherical(input_dim, output_dim)
       } 
-      NNmodel = component$model
-      optimizer = optim_lbfgs(NNmodel$parameters, lr = LR, max_iter = max_iter, line_search_fn = line_search_fn)
+      NNmodel <- component$model
+      optimizer <- optim_lbfgs(NNmodel$parameters, lr = LR,
+                               max_iter = max_iter,
+                               line_search_fn = line_search_fn)
       NNmodel$train()
       
       calc_loss <- function() {
         optimizer$zero_grad()
-        res = NNmodel(X)
-        loss = scauchy_weighted_neg_log_likelihood(res$mu, res$rho, Y, W)
+        res <- NNmodel(X)
+        loss <- scauchy_weighted_neg_log_likelihood(res$mu, res$rho, Y, W)
         loss$backward()
         loss
       }
@@ -240,8 +241,9 @@ FLXMRspcauchy <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200
       })
       
     }
-    df <- d*input_dim
-    retval@defineComponent(c(para , df = df, NNmodel = NNmodel))
+    para$df <- d*input_dim 
+    para$NNmodel <- NNmodel
+    retval@defineComponent(para)
   }
   retval
 }
@@ -249,20 +251,20 @@ FLXMRspcauchy <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200
 
 #################################################################################################
 
-pkbd_log_likelihood <- function(mu, rho, Y){
-  d = Y$shape[2]
-  term1 = (1-rho^2)$log()
-  term2 = 1 + rho^2 - 2* rho*((mu$unsqueeze(2)$matmul(Y$unsqueeze(3)))$squeeze(3))
-  log_likelihood = term1 - (d/2)*term2$log()
+pkbd_log_likelihood <- function(mu, rho, Y) {
+  d <- Y$shape[2]
+  term1 <- (1-rho^2)$log()
+  term2 <- 1 + rho^2 - 2 * rho * ((mu$unsqueeze(2)$matmul(Y$unsqueeze(3)))$squeeze(3))
+  log_likelihood <- term1 - (d/2) * term2$log()
   return(as_array(log_likelihood))
 }
 
-pkbd_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
-  d = Y$shape[2]
-  term1 = (1-rho^2)$log()
-  term2 = 1 + rho^2 - 2* rho*((mu$unsqueeze(2)$matmul(Y$unsqueeze(3)))$squeeze(3))
-  neg_log_likelihood = (d/2)*term2$log() - term1
-  result = (neg_log_likelihood * W)$sum()
+pkbd_weighted_neg_log_likelihood <- function(mu, rho, Y, W) {
+  d <- Y$shape[2]
+  term1 <- (1-rho^2)$log()
+  term2 <- 1 + rho^2 - 2 * rho * ((mu$unsqueeze(2)$matmul(Y$unsqueeze(3)))$squeeze(3))
+  neg_log_likelihood <- (d/2) * term2$log() - term1
+  result <- (neg_log_likelihood * W)$sum()
   return(result)
 }
 
@@ -270,42 +272,43 @@ pkbd_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
 #######################################################################################
 
 
-#' @title PKBD routine using neural networks for flexmix
-#' @description  \code{FLXMRpkbd} offers a flexmix routine for PKBD distribution using neural networks and adam optimizer. 
-#' @param formula formula
-#' @param EPOCHS number of epochs in the M-step estimation (default: 100)
-#' @param LR learning rate used in the M-steo estimation (default: 0.1)
-#' @param max_iter maximum number of iterations of the LBFGS optimizer (default: 200)
-#' @param adam_iter number of iteration for which the adam optimizer is used before the algorithm switches to L-BFGS (default: 5)
-#' @param free_iter number of initial iterations for which the model in M-step is fully reseted (default: adam_iter)
-#' @param line_search_fn method used for line search in LBFGS (default: "strong_wolfe")
-#' @return Object of type FLXMC for flexmix estimation.
+#' @title PKBD Driver for FlexMix Using Neural Networks
+#' @description This model driver for flexmix implements model-based
+#'     clustering of PKBD distributions using neural network in the M-step.
+#' @param formula A formula.
+#' @param EPOCHS The number of epochs in the M-step estimation (default: 100).
+#' @param LR The learning rate used in the M-step estimation (default: 0.1).
+#' @param max_iter The maximum number of iterations of the LBFGS optimizer (default: 200).
+#' @param adam_iter The number of iteration for which the adam optimizer is used before the algorithm switches to L-BFGS (default: 5).
+#' @param free_iter The number of initial iterations for which the model in M-step is fully reseted (default: adam_iter).
+#' @param line_search_fn The method used for line search in LBFGS (default: "strong_wolfe").
+#' @return Returns an object of class `FLXMC`.
 #' @examples
-#' mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
+#' mix <- rbind(rPKBD(30, 0.95, c(1, 0, 0)), rPKBD(30, 0.9, c(-1, 0, 0)))
 #' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRpkbd())
 #' @rdname FLXMRpkbd
 #' @import flexmix
 #' @import torch
+#' @importFrom methods new
 #' @export
 FLXMRpkbd <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200, 
                               adam_iter = 5, free_iter = adam_iter, line_search_fn = "strong_wolfe"){
-  retval <- new ("FLXMC" , weighted = TRUE , formula = formula , dist = " PKBD " ,
-                 name = " PKBD - based clustering using neural networks")
-  retval@defineComponent <- function (para, df) {
-    NNmodel = para$NNmodel
-    logLik <- function (x , y ) {
-      X = torch_tensor(x)
-      Y = torch_tensor(y)
+  retval <- new ("FLXMC", weighted = TRUE, formula = formula, dist = "PKBD",
+                 name = " PKBD-based clustering using neural networks")
+  retval@defineComponent <- function(para) {
+    NNmodel <- para$NNmodel
+    logLik <- function(x, y) {
+      X <- torch_tensor(x)
+      Y <- torch_tensor(y)
       
       NNmodel$eval()
       with_no_grad({ 
         para_new <- NNmodel(X)
       })
-      pkbd_log_likelihood(mu = para_new$mu , rho = para_new$rho, Y)
-      #(mu = para$mu , rho = para$rho, Y)
+      pkbd_log_likelihood(mu = para_new$mu, rho = para_new$rho, Y)
     }
-    predict <- function ( x ) {
-      X = torch_tensor(x)
+    predict <- function(x) {
+      X <- torch_tensor(x)
       NNmodel$eval()
       with_no_grad({ 
         para_new <- NNmodel(X)
@@ -314,8 +317,10 @@ FLXMRpkbd <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200,
       para_new$rho <- torch::as_array(para_new$rho)
       para_new
     }
-    new ("FLXcomponent" , parameters = list(mu = torch::as_array(para$mu) , rho = torch::as_array(para$rho), model = NNmodel),
-         df = para$df , logLik = logLik , predict = predict)
+    new("FLXcomponent", parameters = list(mu = torch::as_array(para$mu),
+                                          rho = torch::as_array(para$rho),
+                                          model = NNmodel),
+         df = para$df, logLik = logLik, predict = predict)
   }
   
   retval@preproc.y <- function(y){
@@ -323,49 +328,48 @@ FLXMRpkbd <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200,
     return(y/sqrt(norms))
   }
   
-  retval@fit <- function (x , y , w , component) {
+  retval@fit <- function(x, y, w, component) {
     
-    iteration <- eval(quote(get("iter")),parent.frame(n=8))
+    iteration <- eval(quote(get("iter")), parent.frame(n = 8))
     n <- nrow(y)
     d <- ncol(y)
-    input_dim = ncol(x)
-    output_dim = d
-    EPOCHS = EPOCHS
-    LR = LR
-    Y = torch_tensor(y)
-    X = torch_tensor(x)
-    W = torch_tensor(matrix(w/sum(w), ncol = 1))
+    input_dim <- ncol(x)
+    output_dim <- d
+    EPOCHS <- EPOCHS
+    LR <- LR
+    Y <- torch_tensor(y)
+    X <- torch_tensor(x)
+    W <- torch_tensor(matrix(w/sum(w), ncol = 1))
     
     
-    if(iteration <= adam_iter){
-      #print("adam")
-      if(iteration <= free_iter){
-        component$model = Spherical(input_dim, output_dim)
+    if (iteration <= adam_iter) {
+      if (iteration <= free_iter) {
+        component$model <- Spherical(input_dim, output_dim)
       } 
-      NNmodel = component$model
-      optimizer = optim_adam(NNmodel$parameters, lr = LR)
+      NNmodel <- component$model
+      optimizer <- optim_adam(NNmodel$parameters, lr = LR)
       NNmodel$train()
-      for(epoch in seq_len(EPOCHS)){
+      for (epoch in seq_len(EPOCHS)) {
         optimizer$zero_grad()
-        res = NNmodel(X)
-        loss = pkbd_weighted_neg_log_likelihood(res$mu, res$rho, Y, W)
+        res <- NNmodel(X)
+        loss <- pkbd_weighted_neg_log_likelihood(res$mu, res$rho, Y, W)
         loss$backward()
         optimizer$step()
       }
       para <- res  
-    } else{
-      #print("lbfgs")
-      if(iteration <= free_iter){
-        component$model = Spherical(input_dim, output_dim)
+    } else {
+      if (iteration <= free_iter) {
+        component$model <- Spherical(input_dim, output_dim)
       } 
-      NNmodel = component$model
-      optimizer = optim_lbfgs(NNmodel$parameters, lr = LR, max_iter = max_iter, line_search_fn = line_search_fn)
+      NNmodel <- component$model
+      optimizer <- optim_lbfgs(NNmodel$parameters, lr = LR, max_iter = max_iter,
+                               line_search_fn = line_search_fn)
       NNmodel$train()
       
       calc_loss <- function() {
         optimizer$zero_grad()
-        res = NNmodel(X)
-        loss = pkbd_weighted_neg_log_likelihood(res$mu, res$rho, Y, W)
+        res <- NNmodel(X)
+        loss <- pkbd_weighted_neg_log_likelihood(res$mu, res$rho, Y, W)
         loss$backward()
         loss
       }
@@ -377,8 +381,9 @@ FLXMRpkbd <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200,
       })
       
     }
-    df <- d*input_dim
-    retval@defineComponent(c(para , df = df, NNmodel = NNmodel))
+    para$df <- d*input_dim 
+    para$NNmodel <- NNmodel
+    retval@defineComponent(para)
   }
   retval
 }
@@ -572,50 +577,3 @@ dspcauchy <- function(y, mu, rho, log = FALSE) {
 
 
 
-
-
-#' @title Spherical Cauchy routine for flexmix
-#' @description  \code{FLXMCspcauchy} offers a flexmix routine for spherical Cauchy distribution. 
-#' @param formula formula
-#' @return  Object of type FLXMC for flexmix estimation.
-#' @rdname FLXMCspcauchy
-#' @import flexmix
-#' @importFrom methods new
-#' @examples
-#' mix <- rbind(rPKBD(30, 0.95, c(1,0,0)), rPKBD(30, 0.9, c(-1,0,0)))
-#' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMCspcauchy2())
-#' @export
-FLXMCspcauchy2 <- function (formula = .~.){
-  retval <- new ("FLXMC", weighted = TRUE ,
-                 formula = formula , dist = " SCauchy " ,
-                 name = " Spherical Cauchy - based clustering ")
-  retval@defineComponent <- function (para, df) {
-    logLik <- function (x, y){
-      logLik_sCauchy(y , mu_vec = para$mu , rho = para$rho)
-    }
-    predict <- function(x){
-      para$mu
-    }
-    new ("FLXcomponent" , parameters = list(mu = para$mu, rho = para$rho),
-         df = para$df , logLik = logLik , predict = predict)
-  }
-  retval@preproc.y <- function(y){
-    norms <- rowSums(y^2)
-    return(y/sqrt(norms))
-  }
-  
-  retval@preproc.x <- function(x){
-    if (ncol(x) > 1) 
-      stop(paste("for the FLXMCspcauchy x must be univariate, use FLXMRspcauchy for problems with covariates"))
-    x
-  }
-  
-  retval@fit <- function (x , y , w , ...) {
-    n <- nrow(y)
-    d <- ncol(y)
-    para <- M_step_sCauchy(y, w, n, d)
-    df <- d
-    retval@defineComponent(c(para, df = df))
-  }
-  retval
-}

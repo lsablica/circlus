@@ -10,25 +10,25 @@ logLik_PKBD <- function(data, mu_vec, rho) {
 }
 
 #' @title Random Sampling from PKBD Distributions using ACG Envelopes
-#' @description \code{rPKBD_ACG} generates a random sample from PKBD distributions.
-#' @param n number of random draws.
-#' @param rho a numeric giving the concentration parameter.
-#' @param mu a numeric vector giving the mean direction parameter.
-#' @return  A vector the generated values.
-#' @details The function generates samples from PKBD using ACG envelopes
+#' @description Generates a random sample from PKBD distributions.
+#' @param n The number of random draws.
+#' @param rho A numeric giving the concentration parameter.
+#' @param mu A numeric vector giving the mean direction parameter.
+#' @return  A matrix with the generated values.
 #' @rdname rPKBD_ACG
 #' @useDynLib circlus
 #' @importFrom Rcpp evalCpp
+#' @keywords internal
 rPKBD_ACG <- function(n, rho, mu) {
     .Call('_circlus_rPKBD_ACG', PACKAGE = 'circlus', n, rho, mu)
 }
 
-#' @title Random Sampling from spherical Cauchy Distributions
-#' @description \code{rsCauchy} generates a random sample from a mixture of multivariate Watson distributions.
-#' @param n an integer giving the number of samples to draw.
-#' @param rho a numeric value giving the rho parameters.
-#' @param mu a numeric vector giving the mu direction parameter.
-#' @return  A matrix with rows equal to the generated values.
+#' @title Random Sampling from Spherical Cauchy Distributions
+#' @description Generates a random sample from spherical Cauchy distributions.
+#' @param n The number of random draws.
+#' @param rho A numeric value giving the rho parameter.
+#' @param mu A numeric vector giving the mu direction parameter.
+#' @return  A matrix with the generated values.
 #' @rdname rsCauchy
 #' @examples
 #' rsCauchy(10, 0.95, c(1,0,0))

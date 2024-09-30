@@ -3,15 +3,17 @@
 \docType{data}
 \name{Abstracts}
 \alias{Abstracts}
-\title{Abstracts}
+\title{Abstracts of Papers Co-Authored by Friedrich Leisch}
 \format{
-A data frame with 129 rows and 282 variables:
+A data frame with 129 rows and 282 variables.
 }
 \usage{
 Abstracts
 }
 \description{
-A dataset containing the abstracts of papers from Friedrich Leisch together with obtained 
-metadata and embeddings generated using GMT and OpenAI embeddings models.
+A dataset containing the abstracts of papers
+co-authored by Friedrich Leisch together with obtained metadata
+and embeddings generated using GMT and OpenAI embeddings
+models.
 }
 \keyword{datasets}

@@ -2,22 +2,22 @@
 % Please edit documentation in R/RcppExports.R
 \name{rsCauchy}
 \alias{rsCauchy}
-\title{Random Sampling from spherical Cauchy Distributions}
+\title{Random Sampling from Spherical Cauchy Distributions}
 \usage{
 rsCauchy(n, rho, mu)
 }
 \arguments{
-\item{n}{an integer giving the number of samples to draw.}
+\item{n}{The number of random draws.}
 
-\item{rho}{a numeric value giving the rho parameters.}
+\item{rho}{A numeric value giving the rho parameter.}
 
-\item{mu}{a numeric vector giving the mu direction parameter.}
+\item{mu}{A numeric vector giving the mu direction parameter.}
 }
 \value{
-A matrix with rows equal to the generated values.
+A matrix with the generated values.
 }
 \description{
-\code{rsCauchy} generates a random sample from a mixture of multivariate Watson distributions.
+Generates a random sample from spherical Cauchy distributions.
 }
 \examples{
 rsCauchy(10, 0.95, c(1,0,0))

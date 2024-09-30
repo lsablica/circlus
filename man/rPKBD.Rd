@@ -2,28 +2,28 @@
 % Please edit documentation in R/PKBD_sample.R
 \name{rPKBD}
 \alias{rPKBD}
-\title{Random Sampling from PKBD Distributions using ACG and projected Saw distribution}
+\title{Random Sampling from PKBD Distributions using ACG or
+Projected Saw Distributions}
 \usage{
 rPKBD(n, rho, mu, method = "ACG")
 }
 \arguments{
-\item{n}{number of random draws.}
+\item{n}{The number of random draws.}
 
-\item{rho}{a numeric giving the concentration parameter.}
+\item{rho}{A numeric giving the concentration parameter.}
 
-\item{mu}{a numeric vector giving the mean direction parameter.}
+\item{mu}{A numeric vector giving the mean direction parameter.}
 
-\item{method}{method to use, "ACG" for angular central Gaussian distribution envelopes and "Saw" for the use of projected Saw distribution}
+\item{method}{A character indicating the method to use, \code{"ACG"} for
+angular central Gaussian distribution envelopes and \code{"Saw"} for
+the use of projected Saw distributions.}
 }
 \value{
-A vector the generated values.
+A matrix with the generated values.
 }
 \description{
-\code{rPKBD} generates a random sample from PKBD distributions.
-}
-\details{
-The function generates samples from PKBD using ACG and projected Saw distribution.
+Generates a random sample from PKBD distributions.
 }
 \examples{
-rPKBD(10, 0.95, c(1,0,0))
+rPKBD(10, 0.95, c(1, 0, 0))
 }

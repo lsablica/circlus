@@ -73,12 +73,12 @@ arma::mat Moebius_S(arma::mat X, arma::vec mu, double rho){
   return Y;
 }
 
-//' @title Random Sampling from spherical Cauchy Distributions
-//' @description \code{rsCauchy} generates a random sample from a mixture of multivariate Watson distributions.
-//' @param n an integer giving the number of samples to draw.
-//' @param rho a numeric value giving the rho parameters.
-//' @param mu a numeric vector giving the mu direction parameter.
-//' @return  A matrix with rows equal to the generated values.
+//' @title Random Sampling from Spherical Cauchy Distributions
+//' @description Generates a random sample from spherical Cauchy distributions.
+//' @param n The number of random draws.
+//' @param rho A numeric value giving the rho parameter.
+//' @param mu A numeric vector giving the mu direction parameter.
+//' @return  A matrix with the generated values.
 //' @rdname rsCauchy
 //' @examples
 //' rsCauchy(10, 0.95, c(1,0,0))
