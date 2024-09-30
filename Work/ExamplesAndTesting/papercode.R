@@ -1,36 +1,30 @@
-library(flexmix)
-library(circlus)
-data("Abstracts")
+library("flexmix")
+library("circlus")
+data("Abstracts", package = "circlus")
 OAI256 <- do.call(rbind, Abstracts[, "OpenAI_embeddings256"])
-
-
 
 set.seed(1)
 (SC_abstract_8 <- flexmix(OAI256 ~ 1, k = 8, model = FLXMCspcauchy()))
 
-
-
 set.seed(1)
 torch::torch_manual_seed(1)
-(SCNN_abstract_8 <- flexmix(OAI256 ~ 1, k = 8, model = FLXMRspcauchy(LR= 0.02, adam_iter = 0,
-                                                                               free_iter = 5)))
+(SCNN_abstract_8 <- flexmix(OAI256 ~ 1, k = 8,
+                            model = FLXMRspcauchy(LR = 0.02, adam_iter = 0,
+                                                             free_iter = 5)))
 
-
-
-library(tm)
-library(wordcloud)
-library(reshape)
-library(tm)
+library("tm")
+library("wordcloud")
+library("reshape")
+library("tm")
 
 comparison.cloud <- function (term.matrix, scale = c(4, 0.5), max.words = 300, random.order = FALSE, 
-                              rot.per = 0.1, colors = brewer.pal(max(3, ncol(term.matrix)), 
-                                                                 "Dark2"), use.r.layout = FALSE, title.size = 3, title.colors = NULL, 
+                              rot.per = 0.1, colors = brewer.pal(max(3, ncol(term.matrix)), "Dark2"),
+                              use.r.layout = FALSE, title.size = 3, title.colors = NULL, 
                               match.colors = FALSE, title.bg.colors = "grey90", ...) {
   ndoc <- ncol(term.matrix)
   thetaBins <- seq(from = 0, to = 2 * pi, length = ndoc + 1)
   for (i in 1:ndoc) {
-    term.matrix[, i] <- term.matrix[, i]/sum(term.matrix[, 
-                                                         i])
+    term.matrix[, i] <- term.matrix[, i]/sum(term.matrix[, i])
   }
   mean.rates <- rowMeans(term.matrix)
   for (i in 1:ndoc) {
@@ -143,7 +137,7 @@ comparison.cloud <- function (term.matrix, scale = c(4, 0.5), max.words = 300, r
 }
 
 dataset_labels <- SC_abstract_8@cluster
-dataset_s <- sapply(1:8 ,function(label) list( Abstracts[dataset_labels %in% label,1] ) )
+dataset_s <- sapply(1:8, function(label) list(Abstracts[dataset_labels %in% label, 1]))
 names(dataset_s) <- c("Genetic Influences on Psychiatric and Behavioral Disorders",
                       "Advancements in Model Validation and Benchmarking Techniques",
                       "Travel Behavior and Environmental Impact in Transportation and Tourism",
@@ -155,40 +149,51 @@ names(dataset_s) <- c("Genetic Influences on Psychiatric and Behavioral Disorder
 
 dataset_corpus <- lapply(dataset_s, function(x) VCorpus(VectorSource( toString(x) )))
 dataset_corpus_all <- dataset_corpus[[1]]
-for (i in 2:8) { dataset_corpus_all <- c(dataset_corpus_all,dataset_corpus[[i]]) }
+for (i in 2:8) {
+    dataset_corpus_all <- c(dataset_corpus_all,dataset_corpus[[i]])
+}
 dataset_corpus_all <- tm_map(dataset_corpus_all, removePunctuation)
 dataset_corpus_all <- tm_map(dataset_corpus_all, removeNumbers)
-dataset_corpus_all <- tm_map(dataset_corpus_all, function(x) removeWords(x,stopwords("english")))
-words_to_remove <- c("said","from","what","told","over","more","other","have","last","with","this","that","such","when","been","says","will","also","where","why","would","today")
+dataset_corpus_all <- tm_map(dataset_corpus_all, function(x) removeWords(x, stopwords("english")))
+words_to_remove <- c("said", "from", "what", "told", "over", "more",
+                     "other", "have", "last", "with", "this", "that",
+                     "such", "when", "been", "says", "will", "also",
+                     "where", "why", "would", "today")
 dataset_corpus_all <- tm_map(dataset_corpus_all, removeWords, words_to_remove)
+
 document_tm <- TermDocumentMatrix(dataset_corpus_all)
 document_tm_mat <- as.matrix(document_tm)
 colnames(document_tm_mat) <- names(dataset_s)
-index <- as.logical(sapply(rownames(document_tm_mat), function(x) (nchar(x)>3) ))
+index <- as.logical(sapply(rownames(document_tm_mat), function(x) (nchar(x) > 3)))
 document_tm_clean_mat_s <- document_tm_mat[index,]
-comparison.cloud(document_tm_clean_mat_s,max.words=400,random.order=FALSE,c(4,0.5), title.size=0.6, use.r.layout = TRUE)
-legend("bottomright", legend=names(dataset_s), cex=0.5, text.col = brewer.pal(8, "Dark2"))
+comparison.cloud(document_tm_clean_mat_s, max.words = 400, random.order = FALSE,
+                 c(4, 0.5), title.size = 0.6, use.r.layout = TRUE)
+legend("bottomright", legend = names(dataset_s), cex = 0.5,
+       text.col = brewer.pal(8, "Dark2"))
 
-
-authors <- t(aggregate(Abstracts[,c(8:279)], by = list(SC_abstract_8@cluster), sum)[,-1])
-authornames = gsub("\\.(?!\\.)", " ",  rownames(authors), perl = TRUE)
-authornames = sapply(strsplit(authornames, " "), function(x) paste0(substring(head(x, 1),1,1) , ". ", tail(x, 1)))
+authors <- t(aggregate(Abstracts[, c(8:279)], by = list(SC_abstract_8@cluster), sum)[, -1])
+authornames <- gsub("\\.(?!\\.)", " ",  rownames(authors), perl = TRUE)
+authornames <- sapply(strsplit(authornames, " "), function(x)
+    paste0(substring(head(x, 1), 1, 1), ". ", tail(x, 1)))
 rownames(authors) <- authornames
-authors <- authors[-which(authornames == "F. Leisch"),]  
+authors <- authors[-which(authornames == "F. Leisch"), ]  
 colnames(authors) <- NULL
-wordcloud::comparison.cloud(authors ,max.words=Inf,random.order=FALSE,c(2.3,0.23), use.r.layout = TRUE)
-legend("bottomright", legend=names(dataset_s), cex=0.5, text.col = brewer.pal(8, "Dark2"))
+wordcloud::comparison.cloud(authors, max.words = Inf, random.order = FALSE,
+                            c(2.3, 0.23), use.r.layout = TRUE)
+legend("bottomright", legend = names(dataset_s), cex = 0.5,
+       text.col = brewer.pal(8, "Dark2"))
 
-
-
-library(tidyverse)
+library("tidyverse")
 Abstracts %>%
-  mutate(num_of_coauthors = rowSums(Abstracts[,c(8:279)]) - 1, Clusters = factor(names(dataset_s)[SC_abstract_8@cluster], levels = names(dataset_s)) ) %>%
-  ggplot() + geom_boxplot(aes(group = Clusters, y = num_of_coauthors, fill = Clusters)) + ylab("Number of co-authors") +
-  scale_fill_manual(values=brewer.pal(8, "Dark2"))
+    mutate(num_of_coauthors = rowSums(Abstracts[, 8:279]) - 1,
+           Clusters = factor(names(dataset_s)[SC_abstract_8@cluster], levels = names(dataset_s))) %>%
+    ggplot() +
+    geom_boxplot(aes(x = factor(Clusters, labels = 1:8), y = num_of_coauthors, fill = Clusters)) +
+    ylab("Number of co-authors") +
+    xlab("Clusters") + 
+    scale_fill_manual(values = brewer.pal(8, "Dark2"))
 
-
-num_of_coauthors = Abstracts$number_of_coauthors
+num_of_coauthors <- Abstracts$number_of_coauthors
 
 # NOTE: The following function may not produce identical results across different hardware setups.
 # While the results are reproducible on the same computer, we have observed differences when 
@@ -197,11 +202,20 @@ num_of_coauthors = Abstracts$number_of_coauthors
 # threads cannot be set properly, leading to hardware-dependent variations in the output.
 set.seed(1)
 torch::torch_manual_seed(1)
-SCNN_abstract_8b <- flexmix(OAI256 ~ 1 + num_of_coauthors, k = 8, model = FLXMRspcauchy(EPOCHS = 200, LR = 0.02, adam_iter = 10))
+SCNN_abstract_8b <- flexmix(OAI256 ~ 1 + num_of_coauthors, k = 8,
+                            model = FLXMRspcauchy(EPOCHS = 200, LR = 0.02, adam_iter = 10))
 SCNN_abstract_8b
-table(with_num_of_coauthors = SCNN_abstract_8b@cluster, without_num_of_coauthors = SC_abstract_8@cluster)
+table(with_num_of_coauthors = SCNN_abstract_8b@cluster,
+      without_num_of_coauthors = SC_abstract_8@cluster)
 
 Abstracts %>%
-  mutate(num_of_coauthors = rowSums(Abstracts[,c(8:279)]) - 1, Clusters = factor(SCNN_abstract_8b@cluster) ) %>%
-  ggplot() + geom_boxplot(aes(group = Clusters, y = num_of_coauthors, fill = Clusters)) + ylab("Number of coauthors") +
-  scale_fill_manual(values=brewer.pal(8, "Dark2")) + theme(legend.position="none")
+    mutate(num_of_coauthors = rowSums(Abstracts[, 8:279]) - 1,
+           Clusters = factor(SCNN_abstract_8b@cluster)) %>%
+    ggplot() +
+    geom_boxplot(aes(x = Clusters, y = num_of_coauthors, fill = Clusters)) +
+    ylab("Number of coauthors") +
+    scale_fill_manual(values = brewer.pal(8, "Dark2")) +
+    theme(legend.position = "none")
+
+summary(SCNN_abstract_8b)
+

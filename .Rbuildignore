@@ -4,6 +4,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^Test$
+^Work$
 ^ExamplesAndTesting$
 ^data-raw$
 ^sticker\.png$
