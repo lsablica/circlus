@@ -9,12 +9,12 @@ dspcauchy(y, mu, rho, log = FALSE)
 \arguments{
 \item{y}{A matrix or data frame where each row represents a data point on the unit hypersphere.}
 
-\item{mu}{A vector or matrix representing the mean direction parameter(s).
+\item{mu}{A vector or matrix representing the mean direction parameter(s). 
 If a vector, it must be normalized (unit length) and is applied to all data points.
 If a matrix, it must have the same number of rows as \code{y}, and each row must be normalized.}
 
-\item{rho}{A scalar or a vector representing the concentration parameter.
-If a vector, its length must match the number of rows in \code{y}.
+\item{rho}{A scalar or a vector representing the concentration parameter. 
+If a vector, its length must match the number of rows in \code{y}. 
 Each \code{rho[i]} is used to evaluate the density for \code{y[i, ]}.
 Must be between 0 (inclusive) and 1 (exclusive).}
 

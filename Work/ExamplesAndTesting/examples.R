@@ -1,0 +1,540 @@
+numData = 500
+alpha_current_h = 0.2
+numVar = 50
+mu_denom_h = 2
+sum_h_weightMat = 10
+
+root_func <- function(x) x*numVar*sum_h_weightMat + (2*numData*alpha_current_h)*x/(1 - x^2) - numVar*mu_denom_h 
+
+
+rho_current <- (uniroot(
+  f = root_func,
+  interval = c(0,1),
+  f.lower = root_func(0),
+  f.upper = root_func(1),
+  tol = 1e-9
+))$root
+
+
+c1 = numVar*sum_h_weightMat
+c2 = (2*numData*alpha_current_h)
+c3 = numVar*mu_denom_h
+
+library(Rcpp)
+library(microbenchmark)
+sourceCpp("src/pkbd.cpp")
+hybridnewton(c1, c2,c3, tol = 1e-9, maxiter = 100)
+
+microbenchmark((uniroot(
+  f = root_func,
+  interval = c(0,1),
+  f.lower = root_func(0),
+  f.upper = root_func(1),
+  tol = 1e-9
+))$root, hybridnewton(c1, c2,c3, tol = 1e-9, maxiter = 100), times = 1000)
+
+
+
+
+dat <- matrix(rnorm(50*5), nrow = 50, ncol = 5)
+dat <- dat/sqrt(rowSums(dat^2))
+numClust <- 3 
+
+numVar <- ncol(dat)
+numData <- nrow(dat)
+
+alpha_current <- rep(1/numClust, numClust)
+rho_current <- rep(0.5,numClust)
+mu_current <- dat[sample(1:numData, size=numClust, replace=FALSE) ,]
+
+
+mu_matrix = t(mu_current)
+rho_vector = rho_current
+
+currentIter <- 1
+membCurrent <- rep.int(0, times = numData)
+loglikCurrent <- -Inf
+
+# Begin EM iterations
+{
+  v_mat <- dat %*% t(mu_current)
+  alpha_mat_current <- matrix(alpha_current,nrow = numData,ncol = numClust,byrow = TRUE)
+  rho_mat_current <- matrix(rho_current,nrow = numData,ncol = numClust,byrow = TRUE)
+  log_probMat_denom <- log(1 + rho_mat_current^2 - 2*rho_mat_current*v_mat)
+  # eq (11) in ICMLD16 paper
+  log_probMat <- log(1 - (rho_mat_current^2)) - (numVar / 2) * log_probMat_denom
+  ######### E step done#############################################
+  ########## M step now#############################################
+  # Denominator of eq (18) in ICMLD16 paper
+  probSum <- matrix(exp(log_probMat) %*% alpha_current,nrow = numData,ncol = numClust)
+  # eq (18) in ICMLD16 paper
+  log_normProbMat_current <- log(alpha_mat_current) + log_probMat - log(probSum)
+  beta_matrix = exp(log_normProbMat_current)
+  # denominator of eq (20) in ICMLD16 paper
+  log_weightMat <- log_normProbMat_current - log_probMat_denom
+  
+  # eq (19) in ICMLD16 paper
+  alpha_current <- colSums(exp(log_normProbMat_current)) / numData
+  # numerator of fraction in eq (21) of ICMLD16 paper
+  mu_num_sum_MAT <- t(exp(log_weightMat)) %*% dat
+  norm_vec <- function(x) sqrt(sum(x^2))
+  mu_denom <- apply(mu_num_sum_MAT, 1, norm_vec)
+  # eq (21) of ICMLD16 paper without sign function
+  mu_current <- mu_num_sum_MAT / mu_denom
+  for(h in 1:numClust){
+    # update rho params
+    sum_h_weightMat <- sum(exp(log_weightMat[,h]))
+    alpha_current_h <- alpha_current[h]
+    mu_denom_h <- mu_denom[h]
+    root_func <- function(x) {
+      (-2*numData*x*alpha_current_h)/(1 - x^2) + numVar*mu_denom_h -numVar*x*sum_h_weightMat
+    }
+    rho_current[h] <- (uniroot(
+      f = root_func,
+      interval = c(0,1),
+      f.lower = root_func(0),
+      f.upper = root_func(1),
+      tol = 0.001
+    ))$root
+  }
+  # Update counter to NEXT iteration number.
+  currentIter <- currentIter + 1
+}
+
+mu_current ; rho_current
+M_step(dat, beta_matrix, mu_matrix, rho_vector, k =3, n = 50, d = 5, tol = 1e-6, maxiter = 100)
+microbenchmark(M_step_PKBD(dat, beta_matrix[,1], mu_matrix[,1], rho_vector[1], n = 50, d = 5, tol = 1e-6, maxiter = 100), unit = "ms")
+
+
+library(Rcpp) 
+library(microbenchmark)
+sourceCpp("src/sCauchy.cpp")
+
+
+
+gsl::hyperg_2F1(2, 5, 9, 0.7 )
+5*hyper2F1( 6, 9, 0.7 )-4*hyper2F1( 5, 9, 0.7 )
+5*hyper2F1( 6, 9, 0.7 )+(8/0.7)*(1-hyper2F1( 4, 8, 0.7 ))
+
+
+n1d(8, 0.7)
+n1d2(8, 0.7)
+
+n1d_deriv(8, 0.7)
+n1d_deriv2(8, 0.7)
+
+
+hybridnewton(8,0.8)
+n1d(8, 0.539277)
+
+n1d(8, hybridnewton(8,0.99))
+
+X = movMF::rmovMF(4, 0.7*c(1,0,0))
+
+
+rho = 0.5
+mu = c(1,1,1)/sqrt(sum(c(1,1,1)^2))
+psi = rho * mu
+V = (1-rho^2)*(X + matrix(psi, byrow = TRUE, ncol = 3, nrow = 4))/matrix(1+rho^2+2*rho*X%*%mu, nrow = 4, ncol = 3) + matrix(psi, byrow = TRUE, ncol = 3, nrow = 4)
+
+Moebius_S(X, mu , rho)
+
+k=2
+n=4
+d=3
+
+beta_matrix = matrix(abs(rnorm(n*k)), nrow = n, ncol = k)
+beta_matrix = beta_matrix/matrix(rowSums(beta_matrix), nrow = n, ncol = k)
+
+weights_matrix = beta_matrix/matrix(colSums(beta_matrix), nrow = n, ncol = k, byrow = TRUE)
+weighted_means = t(X)%*%weights_matrix
+
+for(i in 1:k){
+  means = weighted_means[,i]
+  weightss = weights_matrix[,i]
+  mu0 = means/sqrt(sum(means^2))
+  rho0 = hybridnewton(d, sqrt(sum(means^2)));
+  psi = rho0 * mu0
+  psiold = psi +10
+  print(psi)
+  
+  while(norm(psi-psiold, type = "2") > 1e-6){
+    psiold = psi
+    trans_data_weighted = t(Moebius_S(X, -mu0 , rho0)) %*% weightss
+    psi = psiold + ((d+1)*(1-rho0^2)/(2*d))*trans_data_weighted
+    rho0 = sqrt(sum(psi^2))
+    mu0 = psi/rho0
+  }
+  print(mu0)
+  print(rho0)
+}
+
+
+k=2
+n=100
+d=3
+vv = c(rep(c(0.99,0.99,0.98,0.98,0.97),10), rep(c(0.01,0.01,0.03,0.02,0.01),10))
+
+X = rbind(rsCauchy(50, 0.7, c(1,0,0)), rsCauchy(50, 0.2, c(0,1,0)))
+beta_matrix = matrix(c(vv, 1-vv), nrow = n, ncol = k)
+beta_matrix = beta_matrix/matrix(rowSums(beta_matrix), nrow = n, ncol = k)
+
+
+M_step_sCauchy2(X, beta_matrix, k =2, n = 4, d = 3, tol = 1e-6, maxiter = 100)
+M_step_sCauchy(X, beta_matrix[,1], n = 4, d = 3, tol = 1e-6, maxiter = 100)
+
+
+library(flexmix)
+mymclust <- function ( formula = .~. , diagonal = TRUE ){
+  retval <- new ("FLXMC" , weighted = TRUE ,
+                 formula = formula , dist = " mvnorm " ,
+                 name = " my model - based clustering ")
+  retval@defineComponent <- function ( para ) {
+     logLik <- function (x , y ) {
+       #print("new iteration")
+       #print(para$center)
+       #print(para$cov)
+       #print(mvtnorm::dmvnorm(y , mean = para$center ,sigma = para$cov , log = TRUE ))
+       mvtnorm::dmvnorm(y , mean = para$center ,
+                        sigma = para$cov , log = TRUE )
+     }
+     predict <- function ( x ) {
+       print(x)
+       matrix ( para$center , nrow = nrow ( x ) ,
+               ncol = length ( para$center ) , byrow = TRUE )
+     }
+     new ("FLXcomponent" , parameters =
+         list ( center = para$center , cov = para$cov ) ,
+         df = para$df , logLik = logLik , predict = predict )
+  }
+  retval@fit <- function (x , y , w , ...) {
+    print(w)
+    para <- cov.wt (y , wt = w )[ c ("center" , "cov")]
+    df <- (3 * ncol ( y ) + ncol ( y )^2)/2
+    if (diagonal) {
+      para$cov <- diag ( diag ( para$cov ))
+      df <- 2 * ncol ( y )
+    }
+    retval@defineComponent ( c ( para , df = df ))
+  }
+  retval
+}
+
+mix <- rbind(mvtnorm::rmvnorm(10, mean = c(1,1), sigma = diag(c(1,1))), mvtnorm::rmvnorm(10, mean = c(10,10), sigma = diag(c(1,1))))
+
+m1 <- flexmix(mix ~ 1, k = 2, model = mymclust())
+
+
+mvtnorm::dmvnorm(mix , mean = c(6.667134, 7.083449),
+                 sigma = matrix(c(17.2475,0,0,21.54636),2,2) , log = TRUE )
+
+
+predict(m1, as.data.frame(mvtnorm::rmvnorm(10, mean = c(1,1))))
+
+
+library(Rcpp) 
+library(microbenchmark)
+sourceCpp("src/sCauchy.cpp")
+
+mymclust <- function ( formula = .~. , diagonal = TRUE ){
+  retval <- new ("FLXMC" , weighted = TRUE ,
+                 formula = formula , dist = " Scauchy " ,
+                 name = " my model - based clustering ")
+  retval@defineComponent <- function ( para ) {
+    logLik <- function (x , y ) {
+      #print("new iteration")
+      #print(para$center)
+      print(para$mu)
+      print(para$rho)
+      logLik_sCauchy(y , mu_vec = para$mu , rho = para$rho)
+    }
+    predict <- function ( x ) {
+      print(x)
+    }
+    new ("FLXcomponent" , parameters =
+           list ( mu = para$mu , rho = para$rho ),
+         df = para$df , logLik = logLik , predict = predict )
+  }
+  retval@fit <- function (x , y , w , ...) {
+    #print(w)
+    n <- nrow(y)
+    d <- ncol(y)
+    para <- M_step_sCauchy(y, w, n, d)
+    #print(para)
+    df <- (d+1)
+    retval@defineComponent ( c ( para , df = df ))
+  }
+  retval
+}
+
+mix <- rbind(rsCauchy(10, 0.95, c(1,0,0)), rsCauchy(10, 0.9, c(-1,0,0)))
+m1 <- flexmix(mix ~ 1, k = 2, model = mymclust())
+
+
+sourceCpp("src/pkbd.cpp")
+sourceCpp("src/rpkbd.cpp")
+
+
+mymclust2 <- function ( formula = .~. , diagonal = TRUE ){
+  retval <- new ("FLXMC" , weighted = TRUE ,
+                 formula = formula , dist = " PKBD " ,
+                 name = " my model - based clustering ")
+  retval@defineComponent <- function ( para ) {
+    logLik <- function (x , y ) {
+      #print("new iteration")
+      #print(para$center)
+      #print(para$mu)
+      #print(para$rho)
+      logLik_PKBD(y , mu_vec = para$mu , rho = para$rho)
+    }
+    predict <- function ( x ) {
+      print(x)
+    }
+    new ("FLXcomponent" , parameters =
+           list ( mu = para$mu , rho = para$rho ),
+         df = para$df , logLik = logLik , predict = predict )
+  }
+  retval@fit <- function (x , y , w , component) {
+    #print(w)
+    n <- nrow(y)
+    d <- ncol(y)
+    if(length(component)==0){
+      component <- list(mu = rep(0,d), rho = runif(1,0.7,0.95)) 
+      print("sup")
+    } 
+    print(component)
+    para <- M_step_PKBD(y, w, component$mu, component$rho, n, d)
+    #print(para)
+    df <- (d+1)
+    retval@defineComponent ( c ( para , df = df ))
+  }
+  retval
+}
+
+mix <- rbind(rPKBD_ACG(10, 0.95, c(1,0,0)), rPKBD_ACG(10, 0.9, c(-1,0,0)))
+m1 <- flexmix(mix ~ 1, k = 2, model = mymclust2())
+
+
+library(reticulate)
+np <- import("numpy")
+X <- rbind(rPKBD_ACG(1000, 0.95, c(1,0,0)), rPKBD_ACG(1000, 0.9, c(-1,0,0)))
+X <- np$asarray(X)
+np$save("X.npy",r_to_py(X))
+
+
+library(reticulate)
+library(Rcpp) 
+library(microbenchmark)
+library(flexmix)
+library(tibble)
+
+setwd("~/GitHub/PKBD---code")
+sourceCpp("src/pkbd.cpp")
+sourceCpp("src/rpkbd.cpp")
+
+
+mymclust2 <- function ( formula = .~. , diagonal = TRUE ){
+  retval <- new ("FLXMC" , weighted = TRUE ,
+                 formula = formula , dist = " PKBD " ,
+                 name = " my model - based clustering ")
+  retval@defineComponent <- function ( para ) {
+    logLik <- function (x , y ) {
+      #print("new iteration")
+      #print(para$center)
+      #print(para$mu)
+      #print(para$rho)
+      logLik_PKBD(y , mu_vec = para$mu , rho = para$rho)
+    }
+    predict <- function ( x ) {
+      #print(x)
+    }
+    new ("FLXcomponent" , parameters =
+           list ( mu = para$mu , rho = para$rho ),
+         df = para$df , logLik = logLik , predict = predict )
+  }
+  retval@fit <- function (x , y , w , component) {
+    #print(w)
+    n <- nrow(y)
+    d <- ncol(y)
+    if(length(component)==0){
+      component <- list(mu = rep(0,d), rho = runif(1,0.7,0.95)) 
+      #print("sup")
+    } 
+    #print(component)
+    para <- M_step_PKBD(y, w, component$mu, component$rho, n, d)
+    #print(para)
+    print(d)
+    df <- (d+1)
+    retval@defineComponent ( c ( para , df = df ))
+  }
+  retval
+}
+
+mix <- rbind(rPKBD_ACG(10, 0.95, c(1,0,0)), rPKBD_ACG(10, 0.9, c(-1,0,0)))
+m1 <- flexmix(mix ~ 1, k = 2, model = mymclust2())
+
+
+pd <- import("pandas")
+aa <- pd$read_pickle("/home/lukas/Documents/GitHub/PKBD---code/ExamplesAndTesting/Work/inst/data/df_final.pkl")
+df = data.frame(aa)
+colnames(df)
+tibble(df)
+
+X = t(sapply(df[,280], function(x) x))
+
+m2 <- flexmix(X ~ 1, k = 10, model = mymclust2())
+m2
+logLik(m2)
+tail(parameters(m2),1)
+save(df, m2, file = "m2.RData")
+
+assignments = apply(m2@posterior$scaled, 1, function(x) which(max(x) == x))
+df[assignments==4,1] # market segmentation
+df[assignments==6,1] #travel stuff
+df[assignments==7,1] # genetic stuff 
+df[assignments==8,1] # statistics
+df[assignments==3,1] # Clustering
+
+
+get_authors <- function(i){
+  cs = colSums(df[assignments==i,7:278])
+  cs = cs[cs>0]
+  sort(cs, decreasing = TRUE)
+}
+get_authors(1)
+get_abstracts <- function(i){
+  df[assignments==i,1]
+}
+get_abstracts(4)
+
+
+# 1 Tourism and Behavioral Studies
+# 2 Environmental and Biological Effects of Agrochemicals
+# 3 Mixture Models and Their Applications
+# 4 Market Segmentation Techniques
+# 5 Advanced Statistical Modelling Techniques
+# 6 Transportation and Mobility Studies
+# 7 Genetic Influences on Psychiatric and Behavioral Disorders
+# 8 Clustering and Classification Methods
+
+m5 <- flexmix(X ~ 1, k = 5, model = mymclust2())
+m5
+logLik(m5)
+save(m5, file = "m5.RData")
+
+
+m6 <- flexmix(X ~ 1, k = 6, model = mymclust2())
+m6
+logLik(m6)
+save(m6, file = "m6.RData")
+
+
+######################33
+library(flexmix)
+library(Rcpp) 
+library(torch)
+
+sourceCpp("~/Documents/GitHub/PKBD---code/src/pkbd.cpp")
+sourceCpp("~/Documents/GitHub/PKBD---code/src/rpkbd.cpp")
+sourceCpp("~/Documents/GitHub/PKBD---code/src/sCauchy.cpp")
+source("~/Documents/GitHub/PKBD---code/R/Estimation.R")
+
+
+mix <- rbind(rPKBD_ACG(300, 0.95, c(1,0,0)), rPKBD_ACG(300, 0.9, c(-1,0,0)))
+m1 <- flexmix(mix ~ 1, k = 2, model = PKBDNN_clust())
+
+
+p =  PKBDNN_clust()
+
+
+library(rgl)
+rgl.open()
+view3d( theta = 195, phi = 10, zoom =0.5)
+rgl.bg(color = "white")
+rgl.points(mix[,1],mix[,2],mix[,3], ylim=c(-1,1), col = c(rep(1,300), rep(2,300)) ,xlim=c(-1,1), zlim = c(-1,1), xlab = "x", ylab = "y", zlab = "z", alpha = 0.8)
+spheres3d(x = 0, y = 0, z = 0, radius = 0.98, col = "green", alpha = 0.6, back = "lines")
+rgl.lines(c(-1.5,1.5), c(0, 0), c(0, 0), color = "black")
+rgl.lines(c(0, 0), c(-1.5,1.5), c(0, 0), color = "blue")
+rgl.lines(c(0, 0), c(0, 0), c(-1.5,1.5), color = "red")
+
+
+p = PKBDNN_clust()
+
+PKBD_abstract_6@components[[1]][[1]]@logLik(matrix(rep(1,129), ncol = 1), OAI)
+PKBDNN_abstract_6@components[[1]][[1]]@logLik(matrix(rep(1,129), ncol = 1), OAI)
+
+
+
+c1model = get("NNmodel", env = environment(PKBDNN_abstract_6b@components[[1]][[1]]@logLik ))
+param = c1model(torch_tensor(matrix(rep(1,129), ncol = 1)))
+mus = param$mu
+mu = as_array(param$mu)[1,]
+rhos = param$rho
+rho = as_array(param$rho)[1,]
+
+circlus:::logLik_PKBD(OAI, mu, rho)
+logLik_PKBD(OAI[c(1,2, 3),], mu, rho) 
+
+pkbd_log_likelihood <- function(mu, rho, Y){
+  d = Y$shape[2]
+  term1 = (1-rho^2)$log()
+  term2 = 1 + rho^2 - 2* rho*((mu$unsqueeze(2)$matmul(Y$unsqueeze(3)))$squeeze(3))
+  log_likelihood = term1 - (d/2)*term2$log()
+  return(as_array(log_likelihood))
+}
+pkbd_log_likelihood(mus[1,drop = F], rhos[1,drop = F], torch_tensor(OAI)[1, drop = F])
+
+
+
+component <- PKBDNN_abstract_6b_adam@components[[1]]
+model = PKBDNN_abstract_6b_adam@model[[1]]
+calc_hessian <- function(PKBDNN_abstract_6b_adam){
+  X = PKBDNN_abstract_6b_adam@model[[1]]@x
+  X = torch_tensor(X, requires_grad = TRUE)
+  Y = PKBDNN_abstract_6b_adam@model[[1]]@y
+  Y = torch_tensor(Y)
+  W = PKBDNN_abstract_6b_adam@posterior$scaled
+  
+  W = torch_tensor(matrix(W[,1]/sum(W[,1]), ncol = 1))
+  model <- PKBDNN_abstract_6b_adam@components[[1]][[1]]@parameters$model
+  
+  
+  full <- function(X){
+    res = model(X)
+    loss = pkbd_weighted_neg_log_likelihood(res$mu, res$rho, Y, W)
+    loss
+  }
+  grads <- torch::autograd_grad(full(X), X, retain_graph = TRUE, create_graph = TRUE)
+  
+  model
+  
+}
+
+
+data.pca <- princomp(OAI)
+summary(data.pca)
+
+pc <- prcomp(OAI,
+             center = TRUE,
+             scale. = TRUE)
+attributes(pc)
+
+
+
+covariancematrix <- cov(OAI)
+covariancematrix
+eigenvaluesvector<-eigen(covariancematrix)
+sortindice<-order(eigenvaluesvector$values,decreasing=TRUE)
+sorteigenvalues<-eigenvaluesvector$values[sortindice]
+sorteigenvector<-eigenvaluesvector$vectors[,sortindice]
+sorteigenvalues
+sorteigenvector
+principalcomponent<-128
+selectedcomponents<- sorteigenvector[,1:principalcomponent]
+selectedcomponents
+#reduced data
+reduceddata <- OAI %*% selectedcomponents
+reduceddata
+
+saveRDS(object = reduceddata/sqrt(rowSums(reduceddata^2)), "~/Documents/GitHub/PKBD---code/ExamplesAndTesting/df_reduced.RDS")
+

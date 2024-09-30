@@ -143,14 +143,16 @@ scauchy_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
 #' @param line_search_fn The method used for line search in LBFGS (default: "strong_wolfe").
 #' @return Returns an object of class `FLXMC`.
 #' @examples
+#' \dontrun{
 #' mix <- rbind(rPKBD(30, 0.95, c(1, 0, 0)), rPKBD(30, 0.9, c(-1, 0, 0)))
-#' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRspcauchy())
+#' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRspcauchy()
+#' }
 #' @rdname FLXMRspcauchy
 #' @import flexmix
 #' @import torch
 #' @importFrom methods new
 #' @export
-FLXMRspcauchy <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200, 
+FLXMRspcauchy <- function(formula = .~., EPOCHS = 100, LR = 0.1, max_iter = 200, 
                                  adam_iter = 5, free_iter = adam_iter, line_search_fn = "strong_wolfe"){
   retval <- new ("FLXMC", weighted = TRUE, formula = formula, dist = "PKBD",
                  name = "Spherical Cauchy-based clustering using neural networks")
@@ -284,14 +286,16 @@ pkbd_weighted_neg_log_likelihood <- function(mu, rho, Y, W) {
 #' @param line_search_fn The method used for line search in LBFGS (default: "strong_wolfe").
 #' @return Returns an object of class `FLXMC`.
 #' @examples
-#' mix <- rbind(rPKBD(30, 0.95, c(1, 0, 0)), rPKBD(30, 0.9, c(-1, 0, 0)))
-#' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRpkbd())
+#' \dontrun{
+#'  mix <- rbind(rPKBD(30, 0.95, c(1, 0, 0)), rPKBD(30, 0.9, c(-1, 0, 0)))
+#'  m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRpkbd())
+#' }
 #' @rdname FLXMRpkbd
 #' @import flexmix
 #' @import torch
 #' @importFrom methods new
 #' @export
-FLXMRpkbd <- function(formula = .~. , EPOCHS = 100, LR = 0.1, max_iter = 200, 
+FLXMRpkbd <- function(formula = .~., EPOCHS = 100, LR = 0.1, max_iter = 200, 
                               adam_iter = 5, free_iter = adam_iter, line_search_fn = "strong_wolfe"){
   retval <- new ("FLXMC", weighted = TRUE, formula = formula, dist = "PKBD",
                  name = " PKBD-based clustering using neural networks")

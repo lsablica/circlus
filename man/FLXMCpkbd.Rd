@@ -10,11 +10,11 @@ FLXMCpkbd(formula = . ~ .)
 \item{formula}{A formula.}
 }
 \value{
-Returns an object of class \code{FLXMC}.
+Returns an object of class `FLXMC`.
 }
 \description{
 This model driver for flexmix implements model-based
-clustering of PKBD distributions.
+    clustering of PKBD distributions.
 }
 \examples{
 mix <- rbind(rPKBD(30, 0.95, c(1, 0, 0)), rPKBD(30, 0.9, c(-1, 0, 0)))
