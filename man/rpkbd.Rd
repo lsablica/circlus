@@ -3,7 +3,7 @@
 \name{rpkbd}
 \alias{rpkbd}
 \title{Random Sampling from PKBD Distributions using ACG or
-    Projected Saw Distributions}
+Projected Saw Distributions}
 \usage{
 rpkbd(n, rho, mu, method = "ACG")
 }
@@ -14,8 +14,8 @@ rpkbd(n, rho, mu, method = "ACG")
 
 \item{mu}{A numeric vector giving the mean direction parameter.}
 
-\item{method}{A character indicating the method to use, `"ACG"` for
-angular central Gaussian distribution envelopes and `"Saw"` for
+\item{method}{A character indicating the method to use, \code{"ACG"} for
+angular central Gaussian distribution envelopes and \code{"Saw"} for
 the use of projected Saw distributions.}
 }
 \value{

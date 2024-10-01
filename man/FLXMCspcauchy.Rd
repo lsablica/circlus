@@ -10,11 +10,11 @@ FLXMCspcauchy(formula = . ~ .)
 \item{formula}{A formula.}
 }
 \value{
-Returns an object of class `FLXMC`.
+Returns an object of class \code{FLXMC}.
 }
 \description{
 This model driver for flexmix implements model-based
-    clustering of spherical Cauchy distributions.
+clustering of spherical Cauchy distributions.
 }
 \examples{
 mix <- rbind(rpkbd(30, 0.95, c(1, 0, 0)), rpkbd(30, 0.9, c(-1, 0, 0)))

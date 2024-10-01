@@ -12,8 +12,8 @@ Abstracts
 }
 \description{
 A dataset containing the abstracts of papers
-    co-authored by Friedrich Leisch together with obtained metadata
-    and embeddings generated using GMT and OpenAI embeddings
-    models.
+co-authored by Friedrich Leisch together with obtained metadata
+and embeddings generated using GMT and OpenAI embeddings
+models.
 }
 \keyword{datasets}

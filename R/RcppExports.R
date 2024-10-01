@@ -29,12 +29,12 @@ rPKBD_ACG <- function(n, rho, mu) {
 #' @param rho A numeric value giving the rho parameter.
 #' @param mu A numeric vector giving the mu direction parameter.
 #' @return  A matrix with the generated values.
-#' @rdname rscauchy
+#' @rdname rspcauchy
 #' @examples
-#' rscauchy(10, 0.95, c(1, 0, 0))
+#' rspcauchy(10, 0.95, c(1, 0, 0))
 #' @export
-rscauchy <- function(n, rho, mu) {
-    .Call('_circlus_rscauchy', PACKAGE = 'circlus', n, rho, mu)
+rspcauchy <- function(n, rho, mu) {
+    .Call('_circlus_rspcauchy', PACKAGE = 'circlus', n, rho, mu)
 }
 
 M_step_sCauchy <- function(data, weights, n, d, tol = 1e-6, maxiter = 100L) {

@@ -79,12 +79,12 @@ arma::mat Moebius_S(arma::mat X, arma::vec mu, double rho){
 //' @param rho A numeric value giving the rho parameter.
 //' @param mu A numeric vector giving the mu direction parameter.
 //' @return  A matrix with the generated values.
-//' @rdname rscauchy
+//' @rdname rspcauchy
 //' @examples
-//' rscauchy(10, 0.95, c(1, 0, 0))
+//' rspcauchy(10, 0.95, c(1, 0, 0))
 //' @export
 // [[Rcpp::export]]
-arma::mat rscauchy(int n, double rho, arma::vec &mu){
+arma::mat rspcauchy(int n, double rho, arma::vec &mu){
   double norm = as_scalar(sum(pow(mu,2)));
   int p = mu.n_elem;
   arma::mat A(n, p);

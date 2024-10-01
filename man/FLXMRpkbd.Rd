@@ -30,11 +30,11 @@ FLXMRpkbd(
 \item{line_search_fn}{The method used for line search in LBFGS (default: "strong_wolfe").}
 }
 \value{
-Returns an object of class `FLXMC`.
+Returns an object of class \code{FLXMC}.
 }
 \description{
 This model driver for flexmix implements model-based
-    clustering of PKBD distributions using neural network in the M-step.
+clustering of PKBD distributions using neural network in the M-step.
 }
 \examples{
 \dontrun{

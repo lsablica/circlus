@@ -30,16 +30,16 @@ FLXMRspcauchy(
 \item{line_search_fn}{The method used for line search in LBFGS (default: "strong_wolfe").}
 }
 \value{
-Returns an object of class `FLXMC`.
+Returns an object of class \code{FLXMC}.
 }
 \description{
 This model driver for flexmix implements model-based
-    clustering of spherical Cauchy distributions using neural
-    networks in the M-step.
+clustering of spherical Cauchy distributions using neural
+networks in the M-step.
 }
 \examples{
 \dontrun{
 mix <- rbind(rpkbd(30, 0.95, c(1, 0, 0)), rpkbd(30, 0.9, c(-1, 0, 0)))
-m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRspcauchy()
+m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRspcauchy())
 }
 }
