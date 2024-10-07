@@ -111,7 +111,7 @@ List M_step_sCauchy(const arma::mat &data, arma::vec weights,
   norm = arma::norm(weighted_means);
   
   mu0 = weighted_means/norm;
-  rho0 = hybridnewton(d, norm, tol = tol, maxiter = maxiter);
+  rho0 = hybridnewton(d, norm, tol, maxiter);
   psi = rho0*mu0;
   
   while(arma::norm(psi-psiold, 2) > tol && niter < maxiter){
