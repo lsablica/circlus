@@ -1,6 +1,6 @@
 Package: circlus
 Type: Package
-Title: Tools for Simulating and Estimating Spherical Cauchy and Poisson Kernel-Based Distributions
+Title: Clustering and Simulation of Spherical Cauchy and PKBD Models
 Version: 0.0.1
 Authors@R: c(
     person("Lukas", "Sablica", email = "lsablica@wu.ac.at", role = c("aut", "cre"),
@@ -12,7 +12,7 @@ Authors@R: c(
     person("Josef", "Leydold", email = "Josef.Leydold@wu.ac.at", role = "aut",
            comment = c(ORCID = "0000-0002-9076-4893"))
   )
-Description: Estimation scheme offers objects for flexmix package together with the necessary M-steps for both of the distributions. The random sampling scheme of the package offers two random number generators for the Poisson Kernel-Based Distribution (PKBD) and one generator for spherical Cauchy distribution on the sphere.
+Description: The package provides estimation methods and clustering models for spherical data, integrating with the 'flexmix' package. It includes the necessary M-step implementations for both Poisson Kernel-Based Distribution (PKBD) and spherical Cauchy distribution. Additionally, the package offers random number generators for PKBD and spherical Cauchy distribution. Methods are based on Golzy M., Markatou M. (2020) <doi:10.1080/10618600.2020.1740713>, Kato S., McCullagh P. (2020) <doi:10.3150/20-bej1222> and Sablica L., Hornik K., Leydold J. (2023) <doi:10.1214/23-ejs2149>.
 License: GPL-3
 Encoding: UTF-8
 Imports: Rcpp (>= 0.12.18), Tinflex (>= 1.8), flexmix, torch, methods
