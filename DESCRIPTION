@@ -12,7 +12,7 @@ Authors@R: c(
     person("Josef", "Leydold", email = "Josef.Leydold@wu.ac.at", role = "aut",
            comment = c(ORCID = "0000-0002-9076-4893"))
   )
-Description: The package provides estimation methods and clustering models for spherical data, integrating with the 'flexmix' package. It includes the necessary M-step implementations for both Poisson Kernel-Based Distribution (PKBD) and spherical Cauchy distribution. Additionally, the package offers random number generators for PKBD and spherical Cauchy distribution. Methods are based on Golzy M., Markatou M. (2020) <doi:10.1080/10618600.2020.1740713>, Kato S., McCullagh P. (2020) <doi:10.3150/20-bej1222> and Sablica L., Hornik K., Leydold J. (2023) <doi:10.1214/23-ejs2149>.
+Description: Provides tools for estimation and clustering of spherical data, seamlessly integrated with the 'flexmix' package. Includes the necessary M-step implementations for both Poisson Kernel-Based Distribution (PKBD) and spherical Cauchy distribution. Additionally, the package provides random number generators for PKBD and spherical Cauchy distribution. Methods are based on Golzy M., Markatou M. (2020) <doi:10.1080/10618600.2020.1740713>, Kato S., McCullagh P. (2020) <doi:10.3150/20-bej1222> and Sablica L., Hornik K., Leydold J. (2023) <doi:10.1214/23-ejs2149>.
 License: GPL-3
 Encoding: UTF-8
 Imports: Rcpp (>= 0.12.18), Tinflex (>= 1.8), flexmix, torch, methods
