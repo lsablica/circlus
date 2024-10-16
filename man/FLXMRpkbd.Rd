@@ -37,8 +37,10 @@ This model driver for flexmix implements model-based
 clustering of PKBD distributions using neural network in the M-step.
 }
 \examples{
-\dontrun{
- mix <- rbind(rpkbd(30, 0.95, c(1, 0, 0)), rpkbd(30, 0.9, c(-1, 0, 0)))
- m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRpkbd())
+\donttest{
+if(torch::torch_is_installed()){
+mix <- rbind(rpkbd(30, 0.95, c(1, 0, 0)), rpkbd(30, 0.9, c(-1, 0, 0)))
+m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRpkbd())
+}
 }
 }

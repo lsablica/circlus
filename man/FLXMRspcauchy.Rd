@@ -38,8 +38,10 @@ clustering of spherical Cauchy distributions using neural
 networks in the M-step.
 }
 \examples{
-\dontrun{
+\donttest{
+if(torch::torch_is_installed()){
 mix <- rbind(rpkbd(30, 0.95, c(1, 0, 0)), rpkbd(30, 0.9, c(-1, 0, 0)))
 m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRspcauchy())
+}
 }
 }

@@ -143,9 +143,11 @@ scauchy_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
 #' @param line_search_fn The method used for line search in LBFGS (default: "strong_wolfe").
 #' @return Returns an object of class `FLXMC`.
 #' @examples
-#' \dontrun{
+#' \donttest{
+#' if(torch::torch_is_installed()){
 #' mix <- rbind(rpkbd(30, 0.95, c(1, 0, 0)), rpkbd(30, 0.9, c(-1, 0, 0)))
 #' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRspcauchy())
+#' }
 #' }
 #' @rdname FLXMRspcauchy
 #' @import flexmix
@@ -286,9 +288,11 @@ pkbd_weighted_neg_log_likelihood <- function(mu, rho, Y, W) {
 #' @param line_search_fn The method used for line search in LBFGS (default: "strong_wolfe").
 #' @return Returns an object of class `FLXMC`.
 #' @examples
-#' \dontrun{
-#'  mix <- rbind(rpkbd(30, 0.95, c(1, 0, 0)), rpkbd(30, 0.9, c(-1, 0, 0)))
-#'  m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRpkbd())
+#' \donttest{
+#' if(torch::torch_is_installed()){
+#' mix <- rbind(rpkbd(30, 0.95, c(1, 0, 0)), rpkbd(30, 0.9, c(-1, 0, 0)))
+#' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRpkbd())
+#' }
 #' }
 #' @rdname FLXMRpkbd
 #' @import flexmix
