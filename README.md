@@ -1,6 +1,6 @@
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/LucasKook/comets/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LucasKook/comets/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/lsablica/circlus/actions/workflows/rhub.yaml/badge.svg)](https://github.com/lsablica/circlus/actions/workflows/rhub.yaml)
 <!-- badges: end -->
 
 # circlus: Clustering and Simulation of Spherical Cauchy and PKBD Models <img src='logo.png' align="right" height="138.5" />
