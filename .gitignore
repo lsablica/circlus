@@ -6,6 +6,7 @@
 .Rhistory
 .Rapp.history
 *.Rproj
+PKBD---code.Rproj
 
 # Session Data files
 .RData
