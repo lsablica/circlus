@@ -8,7 +8,7 @@
 ^ExamplesAndTesting$
 ^data-raw$
 ^sticker\.png$
-^logo\.pdf$
+^logo\.png$
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
 ^\.github$

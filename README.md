@@ -1,4 +1,4 @@
-# ![circlus logo](logo.pdf) circlus: Clustering and Simulation of Spherical Cauchy and PKBD Models
+# ![circlus logo](logo.png) circlus: Clustering and Simulation of Spherical Cauchy and PKBD Models
 
 **circlus** is an R package for the estimation and clustering of spherical data, seamlessly integrated with the `flexmix` package. It includes the necessary M-step implementations for both Poisson Kernel-Based Distribution (PKBD) and spherical Cauchy distribution, and provides random number generators for both distributions.
 
