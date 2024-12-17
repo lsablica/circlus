@@ -43,7 +43,6 @@ List M_step_PKBD(const arma::mat &data, arma::vec weights, arma::vec mu_vec, dou
   double mu_norm = arma::vecnorm(mu);
   mu_vec = mu/mu_norm;
   double sums_scaled_weight = sum(scaled_weight);
-  
   rho = hybridnewton(d*sums_scaled_weight, 2*n*alpha, d*mu_norm, tol, maxiter); 
   return List::create(Named("mu") = mu_vec, Named("rho") = rho);
   //Rcout << "rho: " << rho << "\n";
