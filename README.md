@@ -4,7 +4,7 @@
   # circlus: Clustering and Simulation of Spherical Cauchy and PKBD Models in R
 
   [![R](https://img.shields.io/badge/R-%23E67E22.svg?&logo=R&logoColor=white)](https://www.r-project.org/)
-  [R-CMD-check](https://github.com/lsablica/circlus/actions/workflows/rhub.yaml/badge.svg)](https://github.com/lsablica/circlus/actions/workflows/rhub.yaml)
+  [![R-CMD-check](https://github.com/lsablica/circlus/actions/workflows/rhub.yaml/badge.svg)](https://github.com/lsablica/circlus/actions/workflows/rhub.yaml)
 
 
   [Key Features](#features) •
