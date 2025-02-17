@@ -85,7 +85,7 @@ arma::mat Moebius_S(arma::mat X, arma::vec mu, double rho){
 //' @export
 // [[Rcpp::export]]
 arma::mat rspcauchy(int n, double rho, arma::vec &mu){
-  double norm = as_scalar(sum(pow(mu,2)));
+  double norm = arma::as_scalar(sum(pow(mu,2)));
   int p = mu.n_elem;
   arma::mat A(n, p);
   A = normalise(A.randn(),2,1);

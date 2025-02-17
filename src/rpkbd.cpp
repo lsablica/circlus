@@ -17,7 +17,7 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 arma::mat rPKBD_ACG(int n, double rho, arma::vec &mu){
   double lambda = 2*rho/(1+rho*rho);
-  double norm = as_scalar(sum(pow(mu,2)));
+  double norm = arma::as_scalar(sum(pow(mu,2)));
   int p = mu.n_elem;
   arma::mat A(n, p);
   if(lambda == 0 || norm == 0){/*uniform*/
