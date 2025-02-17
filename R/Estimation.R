@@ -7,7 +7,7 @@
 #' @import flexmix
 #' @importFrom methods new
 #' @examples
-#' mix <- rbind(rpkbd(30, 0.95, c(1, 0, 0)), rpkbd(30, 0.9, c(-1, 0, 0)))
+#' mix <- rbind(rpkb(30, 0.95, c(1, 0, 0)), rpkb(30, 0.9, c(-1, 0, 0)))
 #' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMCspcauchy())
 #' @export
 FLXMCspcauchy <- function(formula = .~.) {
@@ -46,23 +46,23 @@ FLXMCspcauchy <- function(formula = .~.) {
 
 #################################################################################################
 
-#' @title PKBD Driver for FlexMix
+#' @title PKB distribution Driver for FlexMix
 #' @description This model driver for flexmix implements model-based
-#'     clustering of PKBD distributions.
+#'     clustering of PKB distributions.
 #' @param formula A formula.
 #' @return Returns an object of class `FLXMC`.
-#' @rdname FLXMCpkbd
+#' @rdname FLXMCpkb
 #' @import flexmix
 #' @importFrom methods new
 #' @importFrom stats runif
 #' @examples
-#' mix <- rbind(rpkbd(30, 0.95, c(1, 0, 0)), rpkbd(30, 0.9, c(-1, 0, 0)))
-#' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMCpkbd())
+#' mix <- rbind(rpkb(30, 0.95, c(1, 0, 0)), rpkb(30, 0.9, c(-1, 0, 0)))
+#' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMCpkb())
 #' @export
-FLXMCpkbd <- function(formula = .~.){
+FLXMCpkb <- function(formula = .~.){
   retval <- new("FLXMC", weighted = TRUE,
-                formula = formula, dist = "PKBD",
-                name = "PKBD-based clustering")
+                formula = formula, dist = "PKB",
+                name = "PKB-based clustering")
   retval@defineComponent <- function(para) {
     logLik <- function(x, y) {
       logLik_PKBD(y, mu_vec = para$mu, rho = para$rho)
@@ -80,7 +80,7 @@ FLXMCpkbd <- function(formula = .~.){
   
   retval@preproc.x <- function(x){
     if (ncol(x) > 1) 
-      stop(paste("for the FLXMCpkbd x must be univariate, use FLXMRpkbd for problems with covariates"))
+      stop(paste("for the FLXMCpkb x must be univariate, use FLXMRpkb for problems with covariates"))
     x
   }
   retval@fit <- function(x, y, w, component) {
@@ -145,7 +145,7 @@ scauchy_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
 #' @examples
 #' \donttest{
 #' if(torch::torch_is_installed()){
-#' mix <- rbind(rpkbd(30, 0.95, c(1, 0, 0)), rpkbd(30, 0.9, c(-1, 0, 0)))
+#' mix <- rbind(rpkb(30, 0.95, c(1, 0, 0)), rpkb(30, 0.9, c(-1, 0, 0)))
 #' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRspcauchy())
 #' }
 #' }
@@ -156,7 +156,7 @@ scauchy_weighted_neg_log_likelihood <- function(mu, rho, Y, W){
 #' @export
 FLXMRspcauchy <- function(formula = .~., EPOCHS = 100, LR = 0.1, max_iter = 200, 
                                  adam_iter = 5, free_iter = adam_iter, line_search_fn = "strong_wolfe"){
-  retval <- new ("FLXMC", weighted = TRUE, formula = formula, dist = "PKBD",
+  retval <- new ("FLXMC", weighted = TRUE, formula = formula, dist = "SpCauchy",
                  name = "Spherical Cauchy-based clustering using neural networks")
   retval@defineComponent <- function(para, df) {
     NNmodel = para$NNmodel
@@ -276,9 +276,9 @@ pkbd_weighted_neg_log_likelihood <- function(mu, rho, Y, W) {
 #######################################################################################
 
 
-#' @title PKBD Driver for FlexMix Using Neural Networks
+#' @title PKB distribution Driver for FlexMix Using Neural Networks
 #' @description This model driver for flexmix implements model-based
-#'     clustering of PKBD distributions using neural network in the M-step.
+#'     clustering of PKB distributions using neural network in the M-step.
 #' @param formula A formula.
 #' @param EPOCHS The number of epochs in the M-step estimation (default: 100).
 #' @param LR The learning rate used in the M-step estimation (default: 0.1).
@@ -290,19 +290,19 @@ pkbd_weighted_neg_log_likelihood <- function(mu, rho, Y, W) {
 #' @examples
 #' \donttest{
 #' if(torch::torch_is_installed()){
-#' mix <- rbind(rpkbd(30, 0.95, c(1, 0, 0)), rpkbd(30, 0.9, c(-1, 0, 0)))
-#' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRpkbd())
+#' mix <- rbind(rpkb(30, 0.95, c(1, 0, 0)), rpkb(30, 0.9, c(-1, 0, 0)))
+#' m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRpkb())
 #' }
 #' }
-#' @rdname FLXMRpkbd
+#' @rdname FLXMRpkb
 #' @import flexmix
 #' @import torch
 #' @importFrom methods new
 #' @export
-FLXMRpkbd <- function(formula = .~., EPOCHS = 100, LR = 0.1, max_iter = 200, 
+FLXMRpkb <- function(formula = .~., EPOCHS = 100, LR = 0.1, max_iter = 200, 
                               adam_iter = 5, free_iter = adam_iter, line_search_fn = "strong_wolfe"){
-  retval <- new ("FLXMC", weighted = TRUE, formula = formula, dist = "PKBD",
-                 name = " PKBD-based clustering using neural networks")
+  retval <- new ("FLXMC", weighted = TRUE, formula = formula, dist = "PKB",
+                 name = " PKB-based clustering using neural networks")
   retval@defineComponent <- function(para) {
     NNmodel <- para$NNmodel
     logLik <- function(x, y) {
@@ -398,10 +398,10 @@ FLXMRpkbd <- function(formula = .~., EPOCHS = 100, LR = 0.1, max_iter = 200,
 
 #######################################################################################
 
-#' Density Function for PKBD
+#' Density Function for PKB distribution
 #'
 #' @description
-#' Calculates the density of the PKBD for given data points.
+#' Calculates the density of the PKB distribution for given data points.
 #'
 #' @param y A matrix or data frame where each row represents a data point on the unit hypersphere.
 #' @param mu A vector or matrix representing the mean direction parameter(s). 
@@ -416,15 +416,15 @@ FLXMRpkbd <- function(formula = .~., EPOCHS = 100, LR = 0.1, max_iter = 200,
 #' @return A vector of density values (or log-density if log = TRUE) for each row in y.
 #'
 #' @details
-#' This function calculates the density of the PKBD for each data point in y, given the
+#' This function calculates the density of the PKB distribution for each data point in y, given the
 #' parameters mu and rho. 
 #' @examples
 #' y <- matrix(c(1, 0, 0, 0, 0, 1), ncol = 3, byrow = TRUE)
 #' mu <- c(1, 0, 0)
 #' rho <- 0.5
-#' dpkbd(y, mu, rho)
+#' dpkb(y, mu, rho)
 #' @export
-dpkbd <- function(y, mu, rho, log = FALSE) {
+dpkb <- function(y, mu, rho, log = FALSE) {
   if (!is.matrix(y)) {
     y <- as.matrix(y)
   }
