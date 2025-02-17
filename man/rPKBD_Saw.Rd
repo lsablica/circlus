@@ -2,7 +2,7 @@
 % Please edit documentation in R/PKBD_sample.R
 \name{rPKBD_Saw}
 \alias{rPKBD_Saw}
-\title{Random Sampling from PKBD Distributions using Projected Saw Distribution}
+\title{Random Sampling from PKB Distributions using Projected Saw Distribution}
 \usage{
 rPKBD_Saw(n, rho, mu)
 }
@@ -17,6 +17,6 @@ rPKBD_Saw(n, rho, mu)
 A matrix with the generated values.
 }
 \description{
-Generates a random sample from PKBD distributions.
+Generates a random sample from PKB distributions.
 }
 \keyword{internal}

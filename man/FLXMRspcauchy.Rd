@@ -40,7 +40,7 @@ networks in the M-step.
 \examples{
 \donttest{
 if(torch::torch_is_installed()){
-mix <- rbind(rpkbd(30, 0.95, c(1, 0, 0)), rpkbd(30, 0.9, c(-1, 0, 0)))
+mix <- rbind(rpkb(30, 0.95, c(1, 0, 0)), rpkb(30, 0.9, c(-1, 0, 0)))
 m1 <- flexmix::flexmix(mix ~ 1, k = 2, model = FLXMRspcauchy())
 }
 }

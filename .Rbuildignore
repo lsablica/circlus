@@ -8,6 +8,7 @@
 ^ExamplesAndTesting$
 ^data-raw$
 ^sticker\.png$
+^LICENSE$
 ^logo\.png$
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
