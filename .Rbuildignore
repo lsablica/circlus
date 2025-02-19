@@ -9,6 +9,7 @@
 ^data-raw$
 ^sticker\.png$
 ^LICENSE$
+^README\.md$
 ^logo\.png$
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
