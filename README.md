@@ -14,7 +14,8 @@
   [Key Features](#features) •
   [Project Overview](#installation) •
   [Data and Analysis](#usage) •
-  [Dependencies](#dependencies)
+  [Dependencies](#dependencies) •
+  [Citation](#citation) •
   [Links](#links)
 </div>
 
@@ -70,6 +71,18 @@ It also links to `Rcpp` and `RcppArmadillo`.
 ## License
 
 **circlus** is licensed under the GPL-3 license.
+
+## Citation
+
+If you use **circlus** in your research, please cite the following paper:
+
+@article{sablica2025circlus,
+  title = {circlus: An {R} Package for Circular and Spherical Clustering using {Poisson} Kernel-Based and Spherical {Cauchy} Distributions},
+  author = {Sablica, Lukas and Hornik, Kurt and Gr\"un, Bettina},
+  journal = {Austrian Journal of Statistics},
+  year = {2025},
+  note = {forthcoming}
+}
 
 ## Links
 
