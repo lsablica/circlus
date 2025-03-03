@@ -1,7 +1,7 @@
 Package: circlus
 Type: Package
 Title: Clustering and Simulation of Spherical Cauchy and PKBD Models
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: c(
     person("Lukas", "Sablica", email = "lsablica@wu.ac.at", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-9166-4563")), 
