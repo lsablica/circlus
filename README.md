@@ -77,7 +77,7 @@ It also links to `Rcpp` and `RcppArmadillo`.
 If you use **circlus** in your research, please cite the following paper:
 
 ```bibtex
-@article{sablica2025circlus,
+@article{,
   title = {circlus: An {R} Package for Circular and Spherical Clustering using {Poisson} Kernel-Based and Spherical {Cauchy} Distributions},
   author = {Sablica, Lukas and Hornik, Kurt and Gr\"un, Bettina},
   journal = {Austrian Journal of Statistics},
